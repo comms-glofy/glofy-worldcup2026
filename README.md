@@ -1,0 +1,1 @@
+# glofy-worldcup2026
