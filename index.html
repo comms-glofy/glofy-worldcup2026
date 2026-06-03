@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glofy — World Cup 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      background: #111;
+      font-family: 'Nunito', sans-serif;
+      color: #fff;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── LAYOUT WRAPPER ── */
+    #app {
+      max-width: 560px;
+      margin: 0 auto;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .screen { display: none; animation: fi .35s ease; }
+    .screen.active { display: block; }
+    @keyframes fi { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ══════════════════════════════
+       LANG SWITCHER
+    ══════════════════════════════ */
+    .lang-bar {
+      position: absolute;
+      top: 16px; right: 16px;
+      display: flex; gap: 6px;
+      z-index: 20;
+    }
+    .lang-btn {
+      background: none;
+      border: 1.5px solid rgba(206,255,0,.35);
+      border-radius: 6px;
+      color: rgba(255,255,255,.45);
+      font-family: 'Nunito', sans-serif;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .lang-btn.active { background: #ceff00; color: #1a1a1a; border-color: #ceff00; }
+    .lang-btn:hover:not(.active) { border-color: rgba(206,255,0,.8); color: rgba(255,255,255,.8); }
+
+    /* ══════════════════════════════
+       S0 — HERO
+    ══════════════════════════════ */
+    .hero {
+      background: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bar { height: 5px; background: #ceff00; }
+
+    .field-bg {
+      position: absolute; inset: 0;
+      opacity: .07;
+      background-image:
+        linear-gradient(rgba(206,255,0,.6) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(206,255,0,.6) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .field-circle {
+      position: absolute;
+      width: 340px; height: 340px;
+      border: 2px solid rgba(206,255,0,.1);
+      border-radius: 50%;
+      top: 38%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .field-line {
+      position: absolute;
+      left: 0; right: 0; height: 1px;
+      background: rgba(206,255,0,.07);
+      top: 38%;
+    }
+    .hero-waternum {
+      position: absolute;
+      right: -20px; top: 60px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: min(260px, 42vw);
+      line-height: 1;
+      color: rgba(206,255,0,.05);
+      user-select: none; pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative; z-index: 2;
+      padding: 2.5rem 2rem 0;
+      flex: 1;
+      display: flex; flex-direction: column;
+    }
+
+    .hero-eyebrow {
+      font-size: 10px; letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(206,255,0,.7);
+      margin-bottom: 1.25rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      width: 28px; height: 1px;
+      background: #ceff00; opacity: .5;
+    }
+
+    .hero-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px; letter-spacing: 3px;
+      color: #ceff00;
+      margin-bottom: .4rem;
+    }
+
+    .hero-headline {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(52px, 13vw, 80px);
+      line-height: .93;
+      color: #fff;
+      letter-spacing: .5px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-headline em { color: #ceff00; font-style: normal; }
+
+    .hero-body {
+      font-size: 15px; line-height: 1.7;
+      color: rgba(255,255,255,.6);
+      max-width: 440px;
+      margin-bottom: 2rem;
+    }
+    .hero-body strong { color: #fff; font-weight: 700; }
+
+    .btn-hero {
+      display: inline-block;
+      padding: 15px 38px;
+      background: #ceff00; color: #1a1a1a;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 900;
+      border: none; border-radius: 10px;
+      cursor: pointer;
+      letter-spacing: .3px;
+      transition: transform .15s, box-shadow .15s;
+      align-self: flex-start;
+      margin-bottom: 2.5rem;
+    }
+    .btn-hero:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(206,255,0,.35); }
+
+    .hero-thanks {
+      background: rgba(206,255,0,.07);
+      border-top: 1px solid rgba(206,255,0,.15);
+      padding: 1.5rem 2rem;
+      display: flex; align-items: flex-start; gap: 14px;
+    }
+    .hero-thanks-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+    .hero-thanks-text { font-size: 13px; color: rgba(255,255,255,.55); line-height: 1.6; }
+    .hero-thanks-text strong { color: #ceff00; font-weight: 700; }
+
+    /* ══════════════════════════════
+       S1 — FORM
+    ══════════════════════════════ */
+    .formscreen {
+      background: #1a1a1a;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .form-lang-bar {
+      display: flex; justify-content: flex-end;
+      gap: 6px; margin-bottom: 1.5rem;
+    }
+    .topbar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.75rem; }
+    .badge {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      padding: 4px 12px; border-radius: 20px;
+      background: #ceff00; color: #1a1a1a;
+    }
+    .stitle {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 30px; letter-spacing: 1px; color: #fff;
+    }
+
+    .fl {
+      display: block; font-size: 11px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: rgba(255,255,255,.45); margin-bottom: 6px;
+    }
+    .fg { margin-bottom: 1.25rem; }
+
+    .fi2 {
+      width: 100%; padding: 12px 14px;
+      border-radius: 10px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 600;
+      border: 1.5px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: #fff;
+      transition: border-color .15s;
+      outline: none;
+    }
+    .fi2::placeholder { color: rgba(255,255,255,.28); }
+    .fi2:focus { border-color: #ceff00; }
+
+    .fhint { font-size: 11px; color: rgba(255,255,255,.35); margin-top: 5px; line-height: 1.4; }
+
+    .num-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+    .nb {
+      width: 44px; height: 44px;
+      border-radius: 8px;
+      border: 1.5px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.7);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      cursor: pointer; transition: all .15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nb:hover { border-color: #ceff00; color: #fff; }
+    .nb.sel { background: #ceff00; color: #1a1a1a; border-color: #ceff00; }
+
+    .upload-area {
+      border: 2px dashed rgba(255,255,255,.18);
+      border-radius: 12px; padding: 1.75rem;
+      text-align: center; cursor: pointer;
+      transition: border-color .15s, background .15s;
+      position: relative; overflow: hidden;
+    }
+    .upload-area:hover { border-color: #ceff00; background: rgba(206,255,0,.04); }
+    .upload-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 2; }
+    .prev-img {
+      width: 96px; height: 96px; border-radius: 50%;
+      object-fit: cover; margin: 0 auto 10px; display: block;
+      border: 3px solid #ceff00;
+    }
+    .upload-ico { font-size: 30px; margin-bottom: 8px; }
+    .upload-hint { font-size: 13px; color: rgba(255,255,255,.45); line-height: 1.5; }
+    .upload-hint span { font-size: 11px; display: block; margin-top: 4px; opacity: .6; }
+
+    .err { font-size: 11px; color: #ff6b6b; margin-top: 5px; display: none; }
+    .err.show { display: block; }
+
+    .nav {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-top: 2rem;
+      padding-bottom: 2rem;
+    }
+    .btn-back {
+      background: none; border: none;
+      font-size: 13px; color: rgba(255,255,255,.4);
+      cursor: pointer; font-family: 'Nunito', sans-serif;
+      padding: 8px 0; transition: color .15s;
+    }
+    .btn-back:hover { color: rgba(255,255,255,.8); }
+    .btn-go {
+      padding: 14px 32px; border-radius: 10px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px; font-weight: 900;
+      cursor: pointer; border: none;
+      background: #ceff00; color: #1a1a1a;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .btn-go:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(206,255,0,.3); }
+
+    /* ══════════════════════════════
+       S2 — LOADING
+    ══════════════════════════════ */
+    .loading {
+      background: #1a1a1a;
+      min-height: 100vh;
+      padding: 4rem 2rem;
+      text-align: center;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .spin { display: inline-block; font-size: 56px; animation: sp 1.4s linear infinite; margin-bottom: 1.5rem; }
+    @keyframes sp { to { transform: rotate(360deg); } }
+    .loading h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 34px; letter-spacing: 2px; color: #fff;
+      margin-bottom: 8px;
+    }
+    .loading p { font-size: 13px; color: rgba(255,255,255,.45); margin-bottom: 2rem; }
+    .lsteps { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 340px; }
+    .lstep {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 13px; padding: 12px 16px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.4);
+      transition: all .4s;
+    }
+    .lstep.active { color: #fff; font-weight: 700; background: rgba(206,255,0,.08); }
+    .lstep.done { opacity: .35; }
+    .ldot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,.2); flex-shrink: 0;
+      transition: background .4s;
+    }
+    .lstep.active .ldot { background: #ceff00; box-shadow: 0 0 0 3px rgba(206,255,0,.2); }
+
+    /* ══════════════════════════════
+       S3 — RESULT
+    ══════════════════════════════ */
+    .result {
+      background: #1a1a1a;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .card-outer { border-radius: 20px; overflow: hidden; margin-bottom: 1.25rem; }
+    #fc { display: block; width: 100%; border-radius: 20px; }
+
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .abtn {
+      flex: 1; min-width: 130px;
+      padding: 13px 18px; border-radius: 10px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px; font-weight: 700;
+      cursor: pointer; border: none;
+      transition: transform .15s, opacity .15s;
+    }
+    .abtn:hover { transform: translateY(-2px); opacity: .9; }
+    .abtn.dl { background: #ceff00; color: #1a1a1a; }
+    .abtn.sc { background: #0a66c2; color: #fff; }
+    .abtn.rs { background: rgba(255,255,255,.08); color: rgba(255,255,255,.8); border: 1.5px solid rgba(255,255,255,.14); }
+
+    .err-box {
+      background: rgba(255,80,80,.1); border: 1px solid rgba(255,80,80,.25);
+      border-radius: 10px; padding: 1rem;
+      font-size: 13px; color: #ff9999;
+      margin-bottom: 1rem; display: none; line-height: 1.5;
+    }
+    .err-box.show { display: block; }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══ S0: HERO ══ -->
+  <div class="screen active" id="s0">
+    <div class="hero">
+      <div class="hero-bar"></div>
+      <div class="field-bg"></div>
+      <div class="field-circle"></div>
+      <div class="field-line"></div>
+      <div class="hero-waternum">11</div>
+
+      <div class="lang-bar">
+        <button class="lang-btn active" onclick="setLang('en')" id="lb-en">EN</button>
+        <button class="lang-btn" onclick="setLang('es')" id="lb-es">ES</button>
+      </div>
+
+      <div class="hero-inner">
+        <div class="hero-eyebrow">Glofy · World Cup 2026</div>
+        <div class="hero-logo">⚡ GLOFY</div>
+        <h1 class="hero-headline" id="h-headline"></h1>
+        <p class="hero-body" id="h-body"></p>
+        <button class="btn-hero" id="h-cta" onclick="goTo(1)"></button>
+      </div>
+
+      <div class="hero-thanks">
+        <div class="hero-thanks-icon">🙌</div>
+        <div class="hero-thanks-text" id="h-thanks"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ S1: FORM ══ -->
+  <div class="screen" id="s1">
+    <div class="formscreen">
+      <div class="form-lang-bar">
+        <button class="lang-btn active" onclick="setLang('en')" id="lb2-en">EN</button>
+        <button class="lang-btn" onclick="setLang('es')" id="lb2-es">ES</button>
+      </div>
+      <div class="topbar">
+        <span class="badge">⚡ GLOFY</span>
+        <span class="stitle" id="f-title"></span>
+      </div>
+      <div class="fg">
+        <label class="fl" id="f-l1"></label>
+        <input class="fi2" id="jname" type="text" maxlength="12" oninput="this.value=this.value.toUpperCase()">
+        <p class="err" id="e-name"></p>
+      </div>
+      <div class="fg">
+        <label class="fl" id="f-l2"></label>
+        <div class="num-grid" id="numgrid"></div>
+        <p class="err" id="e-num"></p>
+      </div>
+      <div class="fg">
+        <label class="fl" id="f-l3"></label>
+        <input class="fi2" id="jpos" type="text">
+        <p class="fhint" id="f-h3"></p>
+        <p class="err" id="e-pos"></p>
+      </div>
+      <div class="fg">
+        <label class="fl" id="f-l4"></label>
+        <div class="upload-area">
+          <input type="file" accept="image/*" id="fphoto" onchange="onPhoto(event)">
+          <div id="upholder">
+            <div class="upload-ico">📷</div>
+            <div class="upload-hint" id="f-uph"></div>
+          </div>
+          <img id="prev" class="prev-img" style="display:none" alt="Preview">
+        </div>
+        <p class="err" id="e-photo"></p>
+      </div>
+      <div class="nav">
+        <button class="btn-back" onclick="goTo(0)" id="f-back"></button>
+        <button class="btn-go" onclick="validate()" id="f-go"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ S2: LOADING ══ -->
+  <div class="screen" id="s2">
+    <div class="loading">
+      <div class="spin">⚽</div>
+      <h2 id="l-title"></h2>
+      <p id="l-sub"></p>
+      <div class="lsteps">
+        <div class="lstep active" id="ls0"><div class="ldot"></div><span id="ls0t"></span></div>
+        <div class="lstep" id="ls1"><div class="ldot"></div><span id="ls1t"></span></div>
+        <div class="lstep" id="ls2"><div class="ldot"></div><span id="ls2t"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ S3: RESULT ══ -->
+  <div class="screen" id="s3">
+    <div class="result">
+      <div class="topbar" style="margin-bottom:1.25rem;">
+        <span class="badge">⚡ GLOFY</span>
+        <span class="stitle" id="r-title"></span>
+      </div>
+      <div class="err-box" id="errbox"></div>
+      <div class="card-outer">
+        <canvas id="fc" width="640" height="800"></canvas>
+      </div>
+      <div class="actions">
+        <button class="abtn dl" id="r-dl" onclick="dlCard()"></button>
+        <button class="abtn sc" id="r-sc" onclick="copySlack()"></button>
+        <button class="abtn rs" id="r-rs" onclick="goTo(0)"></button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   CONFIG — reemplazá esta URL con tu webhook de n8n
+══════════════════════════════════════ */
+const N8N_WEBHOOK_URL = 'https://TU-N8N.com/webhook/glofy-jersey';
+
+/* ══════════════════════════════════════
+   TRANSLATIONS
+══════════════════════════════════════ */
+const T = {
+  en: {
+    hHeadline: 'Every team<br>needs <em>its</em><br>players.',
+    hBody: 'A World Cup only makes sense when <strong>the whole squad shows up.</strong> This is our way of putting everyone on the field. Because at Glofy, we don\'t just work together. <strong>We play together.</strong>',
+    hCta: 'Get my jersey ⚽',
+    hThanks: '<strong>Thank you for being part of this team.</strong><br>Glofy wouldn\'t be what it is without the people who make things happen, every single day. That\'s you.',
+    fTitle: 'YOUR DETAILS',
+    fL1: 'Name on the jersey', fP1: 'E.g. GARCÍA',
+    fL2: 'Your number',
+    fL3: 'Your position',
+    fP3: 'Your real role or a football position — e.g. Tech Lead, Midfielder, Striker...',
+    fH3: 'Your job title, area, or whatever position you play on this team.',
+    fL4: 'Your photo (Slack or LinkedIn)',
+    fUph: 'Upload your professional photo<span>JPG or PNG · Neutral background works best</span>',
+    fBack: '← Back', fGo: 'Generate my jersey ⚽',
+    eN: 'Enter a name.', eNum: 'Pick a number.', eP: 'Enter your position.', ePh: 'Upload a photo.',
+    lTitle: 'BUILDING YOUR CARD', lSub: 'AI is working on your jersey right now',
+    ls0: 'Reading your photo', ls1: 'Generating jersey image', ls2: 'Composing your player card',
+    rTitle: 'YOUR CARD',
+    rDl: '⬇ Download', rSc: '🔗 Copy for Slack / LinkedIn', rRs: '↩ New card',
+    shareText: (n,num,p) => `⚡ GLOFY | World Cup 2026\n\n👕 ${n} #${num} | ${p}\n\n"Play your best game, every day."\n\n#WorldCup2026 #Glofy #WePlayTogether`,
+    errMsg: (e) => `Could not generate the jersey image (${e}). Showing your original photo. Make sure the n8n webhook is configured.`,
+  },
+  es: {
+    hHeadline: 'Todo equipo<br>necesita <em>sus</em><br>jugadores.',
+    hBody: 'Un Mundial solo tiene sentido cuando <strong>todo el equipo está en la cancha.</strong> Esta es nuestra forma de poner a todos en el campo. Porque en Glofy, no solo trabajamos juntos. <strong>Jugamos juntos.</strong>',
+    hCta: 'Quiero mi camiseta ⚽',
+    hThanks: '<strong>Gracias por ser parte de este equipo.</strong><br>Glofy no sería lo que es sin las personas que hacen que las cosas pasen todos los días. Eso sos vos.',
+    fTitle: 'TUS DATOS',
+    fL1: 'Nombre en la camiseta', fP1: 'Ej: GARCÍA',
+    fL2: 'Tu número',
+    fL3: 'Tu posición',
+    fP3: 'Tu puesto real o una posición futbolística — ej: Tech Lead, Mediocampista, Delantero...',
+    fH3: 'Tu área, cargo, o el rol que jugás en este equipo.',
+    fL4: 'Tu foto (Slack o LinkedIn)',
+    fUph: 'Subí tu foto profesional<span>JPG o PNG · Un fondo neutro ayuda al resultado</span>',
+    fBack: '← Volver', fGo: 'Generar mi camiseta ⚽',
+    eN: 'Ingresá un nombre.', eNum: 'Elegí un número.', eP: 'Ingresá tu posición.', ePh: 'Subí una foto.',
+    lTitle: 'GENERANDO TU FICHA', lSub: 'La IA está trabajando en tu camiseta',
+    ls0: 'Leyendo tu foto', ls1: 'Generando imagen con camiseta', ls2: 'Componiendo tu ficha',
+    rTitle: 'TU FICHA',
+    rDl: '⬇ Descargar', rSc: '🔗 Copiar para Slack / LinkedIn', rRs: '↩ Nueva ficha',
+    shareText: (n,num,p) => `⚡ GLOFY | World Cup 2026\n\n👕 ${n} #${num} | ${p}\n\n"Play your best game, every day.."\n\n#WorldCup2026 #Glofy #JugamosJuntos`,
+    errMsg: (e) => `No se pudo generar la imagen (${e}). Se muestra tu foto original. Verificá que el webhook de n8n esté configurado.`,
+  }
+};
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let lang = 'en';
+let jname = '', jnum = 10, jpos = '', photoB64 = null, photoMime = 'image/jpeg';
+let generatedImgUrl = null;
+
+/* ══════════════════════════════════════
+   LANG
+══════════════════════════════════════ */
+function applyLang() {
+  const t = T[lang];
+  document.getElementById('h-headline').innerHTML = t.hHeadline;
+  document.getElementById('h-body').innerHTML = t.hBody;
+  document.getElementById('h-cta').textContent = t.hCta;
+  document.getElementById('h-thanks').innerHTML = t.hThanks;
+  document.getElementById('f-title').textContent = t.fTitle;
+  document.getElementById('f-l1').textContent = t.fL1;
+  document.getElementById('jname').placeholder = t.fP1;
+  document.getElementById('f-l2').textContent = t.fL2;
+  document.getElementById('f-l3').textContent = t.fL3;
+  document.getElementById('jpos').placeholder = t.fP3;
+  document.getElementById('f-h3').textContent = t.fH3;
+  document.getElementById('f-l4').textContent = t.fL4;
+  document.getElementById('f-uph').innerHTML = t.fUph;
+  document.getElementById('f-back').textContent = t.fBack;
+  document.getElementById('f-go').textContent = t.fGo;
+  document.getElementById('e-name').textContent = t.eN;
+  document.getElementById('e-num').textContent = t.eNum;
+  document.getElementById('e-pos').textContent = t.eP;
+  document.getElementById('e-photo').textContent = t.ePh;
+  document.getElementById('l-title').textContent = t.lTitle;
+  document.getElementById('l-sub').textContent = t.lSub;
+  document.getElementById('ls0t').textContent = t.ls0;
+  document.getElementById('ls1t').textContent = t.ls1;
+  document.getElementById('ls2t').textContent = t.ls2;
+  document.getElementById('r-title').textContent = t.rTitle;
+  document.getElementById('r-dl').textContent = t.rDl;
+  document.getElementById('r-sc').textContent = t.rSc;
+  document.getElementById('r-rs').textContent = t.rRs;
+  ['en','es'].forEach(l => {
+    document.getElementById('lb-'+l).classList.toggle('active', l === lang);
+    document.getElementById('lb2-'+l).classList.toggle('active', l === lang);
+  });
+}
+function setLang(l) { lang = l; applyLang(); }
+
+/* ══════════════════════════════════════
+   NUMBERS
+══════════════════════════════════════ */
+function buildNums() {
+  const g = document.getElementById('numgrid'); g.innerHTML = '';
+  [1,2,3,4,5,6,7,8,9,10,11,17,21,23,99].forEach(n => {
+    const b = document.createElement('button');
+    b.className = 'nb' + (n === 10 ? ' sel' : '');
+    b.textContent = n;
+    b.onclick = () => { jnum = n; document.querySelectorAll('.nb').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); };
+    g.appendChild(b);
+  });
+  jnum = 10;
+}
+
+/* ══════════════════════════════════════
+   PHOTO
+══════════════════════════════════════ */
+function onPhoto(e) {
+  const f = e.target.files[0]; if (!f) return;
+  photoMime = f.type || 'image/jpeg';
+  const r = new FileReader();
+  r.onload = ev => {
+    photoB64 = ev.target.result.split(',')[1];
+    const img = document.getElementById('prev');
+    img.src = ev.target.result; img.style.display = 'block';
+    document.getElementById('upholder').style.display = 'none';
+  };
+  r.readAsDataURL(f);
+}
+
+/* ══════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════ */
+function goTo(n) {
+  document.querySelectorAll('.screen').forEach((s, i) => s.classList.toggle('active', i === n));
+  window.scrollTo(0, 0);
+}
+function showErr(id, show) { document.getElementById(id).classList.toggle('show', show); }
+
+function validate() {
+  jname = document.getElementById('jname').value.trim().toUpperCase();
+  jpos = document.getElementById('jpos').value.trim();
+  let ok = true;
+  if (!jname) { showErr('e-name', true); ok = false; } else showErr('e-name', false);
+  if (!jpos)  { showErr('e-pos', true);  ok = false; } else showErr('e-pos', false);
+  if (!photoB64) { showErr('e-photo', true); ok = false; } else showErr('e-photo', false);
+  if (ok) generate();
+}
+
+/* ══════════════════════════════════════
+   GENERATE — llama al webhook de n8n
+   que hace Vision + DALL-E de forma segura
+══════════════════════════════════════ */
+function setStep(n) {
+  ['ls0','ls1','ls2'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = 'lstep' + (i === n ? ' active' : i < n ? ' done' : '');
+    el.querySelector('.ldot').style.background = i === n ? '#ceff00' : '';
+  });
+}
+
+async function generate() {
+  goTo(2); setStep(0);
+  document.getElementById('errbox').classList.remove('show');
+
+  try {
+    // Simular progreso visual mientras n8n procesa
+    setTimeout(() => setStep(1), 3000);
+    setTimeout(() => setStep(2), 8000);
+
+    const resp = await fetch(N8N_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        photo_b64: photoB64,
+        photo_mime: photoMime,
+        jersey_name: jname,
+        jersey_number: jnum,
+        position: jpos,
+        brand: 'glofy'
+      })
+    });
+
+    const data = await resp.json();
+    if (!data.image_url) throw new Error(data.error || 'No image returned');
+    generatedImgUrl = data.image_url;
+
+    await buildCard(generatedImgUrl);
+    goTo(3);
+
+  } catch (err) {
+    await buildCard(null);
+    goTo(3);
+    const t = T[lang];
+    document.getElementById('errbox').textContent = t.errMsg(err.message);
+    document.getElementById('errbox').classList.add('show');
+  }
+}
+
+/* ══════════════════════════════════════
+   CANVAS CARD — siempre en inglés
+   Badge de posición: dinámico, no se corta
+══════════════════════════════════════ */
+async function buildCard(imgUrl) {
+  const canvas = document.getElementById('fc');
+  const ctx = canvas.getContext('2d');
+  const W = 640, H = 800;
+  canvas.width = W; canvas.height = H;
+
+  // BG
+  ctx.fillStyle = '#1a1a1a'; ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(206,255,0,0.04)'; ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 28) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 28) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+  // Accent bar
+  ctx.fillStyle = '#ceff00'; ctx.fillRect(0, 0, W, 6);
+
+  // Watermark número
+  ctx.font = '900 200px "Bebas Neue",sans-serif';
+  ctx.fillStyle = 'rgba(206,255,0,0.05)';
+  ctx.textAlign = 'right'; ctx.fillText(jnum, W - 20, 230); ctx.textAlign = 'left';
+
+  // Header labels
+  ctx.fillStyle = 'rgba(206,255,0,0.7)'; ctx.font = 'bold 10px "Nunito",sans-serif';
+  ctx.fillText('WORLD CUP 2026', 30, 38);
+  ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.font = '10px "Nunito",sans-serif';
+  ctx.fillText('⚡ GLOFY — PLAYER CARD', 30, 56);
+
+  // Foto centrada
+  const src = imgUrl || (photoB64 ? 'data:' + photoMime + ';base64,' + photoB64 : null);
+  if (src) {
+    await new Promise(resolve => {
+      const img = new Image(); img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const px = 160, py = 72, pw = 320, ph = 430;
+        ctx.save(); rrP(ctx, px, py, pw, ph, 16); ctx.clip();
+        const sc = Math.max(pw / img.width, ph / img.height);
+        ctx.drawImage(img, px + (pw - img.width*sc)/2, py + (ph - img.height*sc)/2, img.width*sc, img.height*sc);
+        ctx.restore();
+        ctx.strokeStyle = '#ceff00'; ctx.lineWidth = 3;
+        rrP(ctx, px, py, pw, ph, 16); ctx.stroke();
+        resolve();
+      };
+      img.onerror = resolve;
+      img.src = src;
+    });
+  }
+
+  // Nombre
+  ctx.fillStyle = '#ffffff'; ctx.font = '900 56px "Bebas Neue",sans-serif';
+  ctx.fillText(jname, 30, 572);
+
+  // Número
+  ctx.fillStyle = '#ceff00'; ctx.font = 'bold 38px "Bebas Neue",sans-serif';
+  ctx.fillText('#' + jnum, 30, 614);
+
+  // Badge posición — dinámico, wrappea si es largo
+  const posText = jpos.toUpperCase();
+  const badgeFont = 'bold 12px "Nunito",sans-serif';
+  ctx.font = badgeFont;
+  const maxBW = W - 60, padX = 16, padY = 9, lineH = 18;
+  const words = posText.split(' ');
+  const lines = []; let cur = '';
+  words.forEach(w => {
+    const test = cur ? cur + ' ' + w : w;
+    if (ctx.measureText(test).width > maxBW - padX*2 && cur) { lines.push(cur); cur = w; }
+    else { cur = test; }
+  });
+  if (cur) lines.push(cur);
+
+  const badgeH = lines.length * lineH + padY * 2;
+  const badgeY = 628;
+  ctx.fillStyle = '#ceff00';
+  rrP(ctx, 30, badgeY, maxBW, badgeH, 8); ctx.fill();
+  ctx.fillStyle = '#1a1a1a'; ctx.font = badgeFont;
+  lines.forEach((line, i) => { ctx.fillText(line, 30 + padX, badgeY + padY + 14 + i * lineH); });
+
+  const afterBadge = badgeY + badgeH + 20;
+
+  // Divider
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(30, afterBadge); ctx.lineTo(W-30, afterBadge); ctx.stroke();
+
+  // Frase
+  ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.font = 'italic 13px "Nunito",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Play your best game — every day.', W/2, afterBadge + 28);
+
+  // Logo
+  ctx.fillStyle = '#ceff00'; ctx.font = 'bold 14px "Bebas Neue",sans-serif';
+  ctx.fillText('⚡ GLOFY', W/2, afterBadge + 52);
+  ctx.textAlign = 'left';
+
+  // Footer
+  ctx.fillStyle = '#ceff00'; ctx.fillRect(0, H-36, W, 36);
+  ctx.fillStyle = '#1a1a1a'; ctx.font = 'bold 9px "Nunito",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('WORLD CUP 2026  •  GLOFY  •  WE PLAY TOGETHER', W/2, H-13);
+  ctx.textAlign = 'left';
+}
+
+function rrP(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+/* ══════════════════════════════════════
+   ACTIONS
+══════════════════════════════════════ */
+function dlCard() {
+  const a = document.createElement('a');
+  a.download = 'glofy-worldcup2026-' + jname.toLowerCase() + '.png';
+  a.href = document.getElementById('fc').toDataURL('image/png');
+  a.click();
+}
+
+function copySlack() {
+  const t = T[lang];
+  const txt = t.shareText(jname, jnum, jpos);
+  navigator.clipboard.writeText(txt).then(() => {
+    const b = document.getElementById('r-sc');
+    const orig = b.textContent;
+    b.textContent = lang === 'en' ? '✓ Copied!' : '✓ ¡Copiado!';
+    setTimeout(() => b.textContent = orig, 2200);
+  });
+}
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+buildNums();
+applyLang();
+</script>
+</body>
+</html>
