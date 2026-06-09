@@ -457,9 +457,14 @@ async function buildCard(logoImg, playerImg) {
 
   /* ── 2. FOTO FULL-BLEED (zona superior) ── */
   if (playerImg) {
-    const sc = Math.max(W / playerImg.width, 720 / playerImg.height);
+    const targetW = W, targetH = 720;
+    const sc = Math.max(targetW / playerImg.width, targetH / playerImg.height);
     const sw = playerImg.width * sc, sh = playerImg.height * sc;
-    ctx.drawImage(playerImg, (W-sw)/2, 0, sw, Math.min(sh, 720));
+    const dx = (targetW - sw) / 2, dy = (targetH - sh) / 2;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(0, 0, targetW, targetH); ctx.clip();
+    ctx.drawImage(playerImg, dx, dy, sw, sh);
+    ctx.restore();
   }
 
   /* ── 3. OVERLAY GRADIENTE sobre la foto ── */
@@ -507,12 +512,7 @@ async function buildCard(logoImg, playerImg) {
   ctx.restore();
   ctx.textAlign = 'left';
 
-  /* ── 8. LÍNEA DIVISORIA ACCENT ── */
-  ctx.strokeStyle = '#ceff00';
-  ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(28, 728); ctx.lineTo(130, 728); ctx.stroke();
-
-  /* ── 9. NOMBRE ── */
+  /* ── 8. NOMBRE ── */
   // Ajustar tamaño de fuente si el nombre es muy largo
   let nameFontSize = 88;
   ctx.font = `900 ${nameFontSize}px "Bebas Neue", sans-serif`;
@@ -554,21 +554,17 @@ async function buildCard(logoImg, playerImg) {
   ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(28, 826); ctx.lineTo(W-28, 826); ctx.stroke();
 
-  /* ── 12. FRASE + LOGO ── */
-  ctx.fillStyle = 'rgba(255,255,255,0.35)';
-  ctx.font = 'italic 400 15px "Barlow", sans-serif';
+  /* ── 12. LOGO CENTRADO ── */
   ctx.textAlign = 'center';
-  ctx.fillText('Play your best game — every day.', W/2, 858);
-
   if (logoImg) {
-    const lH = 30, lW = logoImg.width * (lH / logoImg.height);
-    ctx.globalAlpha = 0.9;
-    ctx.drawImage(logoImg, W/2 - lW/2, 872, lW, lH);
+    const lH = 36, lW = logoImg.width * (lH / logoImg.height);
+    ctx.globalAlpha = 0.95;
+    ctx.drawImage(logoImg, W/2 - lW/2, 848, lW, lH);
     ctx.globalAlpha = 1;
   } else {
     ctx.fillStyle = '#ceff00';
-    ctx.font = '700 18px "Bebas Neue", sans-serif';
-    ctx.fillText('⚡ GLOFY', W/2, 895);
+    ctx.font = '700 22px "Bebas Neue", sans-serif';
+    ctx.fillText('⚡ GLOFY', W/2, 878);
   }
   ctx.textAlign = 'left';
 
@@ -617,6 +613,7 @@ goTo(0);
 </script>
 </body>
 </html>
+
 
 
 
