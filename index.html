@@ -457,28 +457,26 @@ async function buildCard(logoImg, playerImg) {
 
   /* ── 2. FOTO FULL-BLEED (zona superior) ── */
   if (playerImg) {
-    const targetW = W, targetH = 720;
-    const sc = Math.max(targetW / playerImg.width, targetH / playerImg.height);
-    const sw = playerImg.width * sc, sh = playerImg.height * sc;
-    const dx = (targetW - sw) / 2, dy = (targetH - sh) / 2;
+    // Escalar para cubrir todo el ancho, anclar desde arriba (no centrar verticalmente)
+    const sc = W / playerImg.width;
+    const sw = W, sh = playerImg.height * sc;
     ctx.save();
-    ctx.beginPath(); ctx.rect(0, 0, targetW, targetH); ctx.clip();
-    ctx.drawImage(playerImg, dx, dy, sw, sh);
+    ctx.beginPath(); ctx.rect(0, 0, W, 720); ctx.clip();
+    ctx.drawImage(playerImg, 0, 0, sw, sh);
     ctx.restore();
   }
 
-  /* ── 3. OVERLAY GRADIENTE sobre la foto ── */
-  // Degradado de abajo: negro sólido que aparece en el tercio inferior
-  const photoOverlay = ctx.createLinearGradient(0, 340, 0, 720);
+  /* ── 3. OVERLAY GRADIENTE sobre la foto (sutil) ── */
+  const photoOverlay = ctx.createLinearGradient(0, 420, 0, 720);
   photoOverlay.addColorStop(0, 'rgba(10,10,10,0)');
-  photoOverlay.addColorStop(0.5, 'rgba(10,10,10,0.6)');
-  photoOverlay.addColorStop(1, 'rgba(10,10,10,1)');
+  photoOverlay.addColorStop(0.6, 'rgba(10,10,10,0.45)');
+  photoOverlay.addColorStop(1, 'rgba(10,10,10,0.92)');
   ctx.fillStyle = photoOverlay;
   ctx.fillRect(0, 0, W, 720);
 
   // Overlay lateral izquierdo sutil para legibilidad del header
   const sideOverlay = ctx.createLinearGradient(0, 0, 200, 0);
-  sideOverlay.addColorStop(0, 'rgba(10,10,10,0.5)');
+  sideOverlay.addColorStop(0, 'rgba(10,10,10,0.45)');
   sideOverlay.addColorStop(1, 'rgba(10,10,10,0)');
   ctx.fillStyle = sideOverlay;
   ctx.fillRect(0, 0, 200, 120);
@@ -569,22 +567,14 @@ async function buildCard(logoImg, playerImg) {
   ctx.textAlign = 'left';
 
   /* ── 13. FOOTER ── */
-  // Fondo footer con gradiente sutil
-  const footerGrd = ctx.createLinearGradient(0, 940, 0, H);
-  footerGrd.addColorStop(0, 'rgba(206,255,0,0)');
-  footerGrd.addColorStop(0.3, '#ceff00');
-  footerGrd.addColorStop(1, '#ceff00');
-  ctx.fillStyle = footerGrd;
-  ctx.fillRect(0, 946, W, H - 946);
-
   ctx.fillStyle = '#ceff00';
   ctx.fillRect(0, 958, W, H - 958);
 
-  ctx.fillStyle = 'rgba(0,0,0,0.65)';
-  ctx.font = '700 9px "Barlow Condensed", sans-serif';
+  ctx.fillStyle = 'rgba(0,0,0,0.85)';
+  ctx.font = '700 11px "Barlow Condensed", sans-serif';
   ctx.letterSpacing = '2.5px';
   ctx.textAlign = 'center';
-  ctx.fillText('WORLD CUP 2026  ·  GLOFY  ·  WE PLAY TOGETHER', W/2, H - 16);
+  ctx.fillText('WORLD CUP 2026  ·  GLOFY  ·  WE PLAY TOGETHER', W/2, H - 14);
   ctx.textAlign = 'left';
   ctx.letterSpacing = '0px';
 }
@@ -613,7 +603,3 @@ goTo(0);
 </script>
 </body>
 </html>
-
-
-
-
