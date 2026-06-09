@@ -449,30 +449,43 @@ async function buildCard(logoImg, playerImg) {
   const canvas = document.getElementById('fc');
   const ctx = canvas.getContext('2d');
   const W = 800, H = 1000;
-  canvas.width = W; canvas.height = H;
+  canvas.width = W; canvas.height = H; // altura provisional, se recalcula con la foto
 
   /* ── 1. BG BASE ── */
   ctx.fillStyle = '#0a0a0a';
   ctx.fillRect(0, 0, W, H);
 
-  /* ── 2. FOTO FULL-BLEED (zona superior) ── */
+  /* ── 2. FOTO COMPLETA ── */
+  // La foto ocupa todo el ancho y se muestra completa sin recortar nada.
+  // Calculamos la altura proporcional al ancho del canvas.
+  // La zona de datos queda debajo de la foto.
+  let photoH = 720; // fallback
   if (playerImg) {
-    // Escalar para cubrir todo el ancho, anclar desde arriba (no centrar verticalmente)
+    // Escalar al ancho exacto del canvas, mostrar la foto completa
     const sc = W / playerImg.width;
-    const sw = W, sh = playerImg.height * sc;
-    ctx.save();
-    ctx.beginPath(); ctx.rect(0, 0, W, 720); ctx.clip();
+    const sw = W;
+    const sh = playerImg.height * sc;
+    photoH = Math.round(sh); // altura real de la foto escalada
     ctx.drawImage(playerImg, 0, 0, sw, sh);
-    ctx.restore();
   }
 
-  /* ── 3. OVERLAY GRADIENTE sobre la foto (sutil) ── */
-  const photoOverlay = ctx.createLinearGradient(0, 420, 0, 720);
+  // Recalcular H dinámicamente según la foto
+  // Zona de datos: 280px fijos debajo de la foto
+  const dataZoneH = 280;
+  const totalH = photoH + dataZoneH;
+  canvas.height = totalH;
+
+  // Redibujar BG completo ahora que sabemos el alto real
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(0, photoH, W, dataZoneH);
+
+  /* ── 3. OVERLAY GRADIENTE sobre la foto (sutil, solo parte inferior) ── */
+  const photoOverlay = ctx.createLinearGradient(0, photoH - 240, 0, photoH);
   photoOverlay.addColorStop(0, 'rgba(10,10,10,0)');
-  photoOverlay.addColorStop(0.6, 'rgba(10,10,10,0.45)');
-  photoOverlay.addColorStop(1, 'rgba(10,10,10,0.92)');
+  photoOverlay.addColorStop(0.5, 'rgba(10,10,10,0.35)');
+  photoOverlay.addColorStop(1, 'rgba(10,10,10,0.88)');
   ctx.fillStyle = photoOverlay;
-  ctx.fillRect(0, 0, W, 720);
+  ctx.fillRect(0, photoH - 240, W, 240);
 
   // Overlay lateral izquierdo sutil para legibilidad del header
   const sideOverlay = ctx.createLinearGradient(0, 0, 200, 0);
@@ -480,10 +493,6 @@ async function buildCard(logoImg, playerImg) {
   sideOverlay.addColorStop(1, 'rgba(10,10,10,0)');
   ctx.fillStyle = sideOverlay;
   ctx.fillRect(0, 0, 200, 120);
-
-  /* ── 4. ZONA INFERIOR (negro sólido desde y=720) ── */
-  ctx.fillStyle = '#0a0a0a';
-  ctx.fillRect(0, 720, W, H - 720);
 
   /* ── 5. ACCENT BAR TOP ── */
   ctx.fillStyle = '#ceff00';
@@ -500,18 +509,18 @@ async function buildCard(logoImg, playerImg) {
   ctx.fillText('PLAYER CARD', 28, 52);
   ctx.letterSpacing = '0px';
 
-  /* ── 7. NÚMERO WATERMARK (fondo, zona derecha) ── */
+  /* ── 7. NÚMERO WATERMARK (zona derecha, sobre la foto) ── */
   ctx.save();
   ctx.globalAlpha = 0.07;
   ctx.fillStyle = '#ceff00';
   ctx.font = '900 320px "Bebas Neue", sans-serif';
   ctx.textAlign = 'right';
-  ctx.fillText(jnum, W + 10, 700);
+  ctx.fillText(jnum, W + 10, photoH - 20);
   ctx.restore();
   ctx.textAlign = 'left';
 
   /* ── 8. NOMBRE ── */
-  // Ajustar tamaño de fuente si el nombre es muy largo
+  const nameY = photoH + 68;
   let nameFontSize = 88;
   ctx.font = `900 ${nameFontSize}px "Bebas Neue", sans-serif`;
   while (ctx.measureText(jname).width > W - 56 && nameFontSize > 48) {
@@ -519,27 +528,24 @@ async function buildCard(logoImg, playerImg) {
     ctx.font = `900 ${nameFontSize}px "Bebas Neue", sans-serif`;
   }
   ctx.fillStyle = '#ffffff';
-  ctx.fillText(jname, 28, 740 + (88 - nameFontSize) * 0.5);
+  ctx.fillText(jname, 28, nameY);
 
-  /* ── 10. NÚMERO + POSICIÓN en la misma línea ── */
-  const rowY = 800;
+  /* ── 10. NÚMERO + POSICIÓN ── */
+  const rowY = nameY + 58;
   ctx.fillStyle = '#ceff00';
   ctx.font = '700 38px "Bebas Neue", sans-serif';
   ctx.fillText('#' + jnum, 28, rowY);
 
-  // Separador
   const numW = ctx.measureText('#' + jnum).width;
   ctx.fillStyle = 'rgba(255,255,255,0.2)';
   ctx.fillRect(28 + numW + 14, rowY - 28, 1.5, 30);
 
-  // Posición — en mayúsculas, truncada si necesario
   ctx.fillStyle = 'rgba(255,255,255,0.65)';
   ctx.font = '600 16px "Barlow Condensed", sans-serif';
   ctx.letterSpacing = '1px';
   const posStart = 28 + numW + 30;
   const posMaxW = W - posStart - 28;
   let posText = jpos.toUpperCase();
-  // Truncar si no entra
   while (ctx.measureText(posText).width > posMaxW && posText.length > 3) {
     posText = posText.slice(0, -1);
   }
@@ -548,33 +554,33 @@ async function buildCard(logoImg, playerImg) {
   ctx.letterSpacing = '0px';
 
   /* ── 11. DIVIDER ── */
+  const divY = rowY + 30;
   ctx.strokeStyle = 'rgba(255,255,255,0.08)';
   ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(28, 826); ctx.lineTo(W-28, 826); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(28, divY); ctx.lineTo(W-28, divY); ctx.stroke();
 
-  /* ── 12. LOGO CENTRADO ── */
+  /* ── 12. LOGO ── */
   ctx.textAlign = 'center';
   if (logoImg) {
     const lH = 36, lW = logoImg.width * (lH / logoImg.height);
     ctx.globalAlpha = 0.95;
-    ctx.drawImage(logoImg, W/2 - lW/2, 848, lW, lH);
+    ctx.drawImage(logoImg, W/2 - lW/2, divY + 22, lW, lH);
     ctx.globalAlpha = 1;
   } else {
     ctx.fillStyle = '#ceff00';
     ctx.font = '700 22px "Bebas Neue", sans-serif';
-    ctx.fillText('⚡ GLOFY', W/2, 878);
+    ctx.fillText('⚡ GLOFY', W/2, divY + 50);
   }
   ctx.textAlign = 'left';
 
   /* ── 13. FOOTER ── */
   ctx.fillStyle = '#ceff00';
-  ctx.fillRect(0, 958, W, H - 958);
-
+  ctx.fillRect(0, totalH - 42, W, 42);
   ctx.fillStyle = 'rgba(0,0,0,0.85)';
   ctx.font = '700 11px "Barlow Condensed", sans-serif';
   ctx.letterSpacing = '2.5px';
   ctx.textAlign = 'center';
-  ctx.fillText('WORLD CUP 2026  ·  GLOFY  ·  WE PLAY TOGETHER', W/2, H - 14);
+  ctx.fillText('WORLD CUP 2026  ·  GLOFY  ·  WE PLAY TOGETHER', W/2, totalH - 14);
   ctx.textAlign = 'left';
   ctx.letterSpacing = '0px';
 }
