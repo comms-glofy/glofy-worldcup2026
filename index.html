@@ -3,188 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Glofy — World Cup 2026</title>
+  <title>Glofy | World Cup 2026</title>
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/comms-glofy/glofy-assets/refs/heads/main/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --acc: #ceff00;
-      --dark: #0e0e0e;
-      --dark2: #161616;
-      --dark3: #1e1e1e;
-      --border: rgba(255,255,255,0.08);
-      --text: #ffffff;
-      --muted: rgba(255,255,255,0.45);
+      --acc: #ceff00; --dark: #0e0e0e; --dark2: #161616; --dark3: #1e1e1e;
+      --border: rgba(255,255,255,0.08); --text: #ffffff; --muted: rgba(255,255,255,0.45);
     }
-
-    html, body {
-      width: 100%; min-height: 100vh;
-      background: var(--dark);
-      font-family: 'Barlow', sans-serif;
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
-    }
-
+    html, body { width: 100%; min-height: 100vh; background: var(--dark); font-family: 'Barlow', sans-serif; color: var(--text); -webkit-font-smoothing: antialiased; }
     #app { max-width: 520px; margin: 0 auto; min-height: 100vh; }
-
     .screen { display: none; }
     .screen.active { display: flex; flex-direction: column; min-height: 100vh; animation: fadeUp .4s ease both; }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ── LANG BAR ── */
+    /* LANG */
     .lang-bar { display: flex; justify-content: flex-end; gap: 6px; padding: 16px 20px 0; }
     .lb { background: none; border: 1px solid rgba(206,255,0,.25); border-radius: 4px; color: var(--muted); font-family: 'Barlow Condensed',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; padding: 4px 10px; cursor: pointer; transition: all .15s; }
     .lb.on { background: var(--acc); color: var(--dark); border-color: var(--acc); }
     .lb:hover:not(.on) { border-color: rgba(206,255,0,.6); color: rgba(255,255,255,.8); }
 
-    /* ════════════════════
-       S0 — HERO
-    ════════════════════ */
+    /* HERO */
     #s0 { position: relative; overflow: hidden; }
-
-    .hero-bg {
-      position: absolute; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(206,255,0,.07) 0%, transparent 70%),
-        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,.025) 39px, rgba(255,255,255,.025) 40px),
-        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,.025) 39px, rgba(255,255,255,.025) 40px);
-    }
-    .hero-circle {
-      position: absolute; border-radius: 50%;
-      border: 1px solid rgba(206,255,0,.08);
-      animation: pulse 6s ease-in-out infinite;
-    }
+    .hero-bg { position: absolute; inset: 0; z-index: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(206,255,0,.07) 0%, transparent 70%), repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,.025) 39px, rgba(255,255,255,.025) 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,.025) 39px, rgba(255,255,255,.025) 40px); }
+    .hero-circle { position: absolute; border-radius: 50%; border: 1px solid rgba(206,255,0,.08); animation: pulse 6s ease-in-out infinite; }
     .hero-circle:nth-child(1) { width: 400px; height: 400px; top: -80px; left: 50%; transform: translateX(-50%); }
     .hero-circle:nth-child(2) { width: 600px; height: 600px; top: -180px; left: 50%; transform: translateX(-50%); animation-delay: 1s; }
     @keyframes pulse { 0%,100% { opacity: .4; } 50% { opacity: 1; } }
-
     .hero-top { position: relative; z-index: 2; padding: 32px 28px 0; }
     .hero-eyebrow { font-family: 'Barlow Condensed',sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; color: rgba(206,255,0,.7); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
     .hero-eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--acc); }
-
     .hero-logo-img { height: 28px; margin-bottom: 28px; }
-
-    .hero-headline {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(58px, 14vw, 84px);
-      line-height: .9;
-      letter-spacing: 1px;
-      color: #fff;
-      margin-bottom: 20px;
-    }
-    .hero-headline em { color: var(--acc); font-style: normal; display: block; }
-
+    .hero-headline { font-family: 'Bebas Neue', sans-serif; font-size: clamp(58px, 14vw, 84px); line-height: .9; letter-spacing: 1px; color: #fff; margin-bottom: 20px; }
+    .hero-headline em { color: var(--acc); font-style: normal; }
     .hero-body { font-size: 15px; line-height: 1.75; color: var(--muted); max-width: 400px; margin-bottom: 32px; }
     .hero-body strong { color: #fff; font-weight: 600; }
-
-    .btn-hero {
-      display: inline-flex; align-items: center; gap: 10px;
-      padding: 16px 32px;
-      background: var(--acc); color: var(--dark);
-      font-family: 'Barlow Condensed',sans-serif;
-      font-size: 16px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-      border: none; border-radius: 8px; cursor: pointer;
-      transition: transform .15s, box-shadow .15s;
-      margin-bottom: 40px;
-    }
+    .btn-hero { display: inline-flex; align-items: center; gap: 10px; padding: 16px 32px; background: var(--acc); color: var(--dark); font-family: 'Barlow Condensed',sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; border: none; border-radius: 8px; cursor: pointer; transition: transform .15s, box-shadow .15s; margin-bottom: 40px; }
     .btn-hero:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(206,255,0,.3); }
     .btn-hero .ball { font-size: 20px; }
-
-    /* Camiseta decorativa */
-    .hero-shirt {
-      position: absolute; right: -30px; bottom: 80px; z-index: 1;
-      opacity: .06; width: 260px;
-      pointer-events: none;
-    }
-
-    .hero-thanks {
-      position: relative; z-index: 2;
-      margin-top: auto;
-      background: rgba(206,255,0,.06);
-      border-top: 1px solid rgba(206,255,0,.12);
-      padding: 20px 28px;
-      display: flex; gap: 14px; align-items: flex-start;
-    }
+    .hero-shirt { position: absolute; right: -30px; bottom: 80px; z-index: 1; opacity: .06; width: 260px; pointer-events: none; }
+    .hero-thanks { position: relative; z-index: 2; margin-top: auto; background: rgba(206,255,0,.06); border-top: 1px solid rgba(206,255,0,.12); padding: 20px 28px; display: flex; gap: 14px; align-items: flex-start; }
     .thanks-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
     .thanks-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
     .thanks-text strong { color: var(--acc); font-weight: 600; }
 
-    /* ════════════════════
-       S1 — FORM
-    ════════════════════ */
+    /* FORM */
     #s1 { background: var(--dark2); }
     .form-inner { padding: 28px; flex: 1; }
     .form-header { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
     .form-badge { font-family: 'Barlow Condensed',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; background: var(--acc); color: var(--dark); }
     .form-title { font-family: 'Bebas Neue',sans-serif; font-size: 28px; letter-spacing: 1px; color: #fff; }
-
     .fg { margin-bottom: 20px; }
     .fl { display: block; font-family: 'Barlow Condensed',sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-    .fi {
-      width: 100%; padding: 13px 16px;
-      border-radius: 8px; border: 1px solid var(--border);
-      background: rgba(255,255,255,.04);
-      font-family: 'Barlow',sans-serif; font-size: 15px; font-weight: 500;
-      color: #fff; outline: none; transition: border-color .15s, background .15s;
-    }
+    .fi { width: 100%; padding: 13px 16px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,.04); font-family: 'Barlow',sans-serif; font-size: 15px; font-weight: 500; color: #fff; outline: none; transition: border-color .15s, background .15s; }
     .fi::placeholder { color: rgba(255,255,255,.2); }
     .fi:focus { border-color: rgba(206,255,0,.5); background: rgba(206,255,0,.03); }
     .fhint { font-size: 11px; color: rgba(255,255,255,.25); margin-top: 6px; line-height: 1.4; }
-
     .num-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-    .nb {
-      width: 46px; height: 46px; border-radius: 8px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.04);
-      color: rgba(255,255,255,.6);
-      font-family: 'Bebas Neue',sans-serif; font-size: 22px;
-      cursor: pointer; transition: all .15s;
-      display: flex; align-items: center; justify-content: center;
-    }
+    .nb { width: 46px; height: 46px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,.04); color: rgba(255,255,255,.6); font-family: 'Bebas Neue',sans-serif; font-size: 22px; cursor: pointer; transition: all .15s; display: flex; align-items: center; justify-content: center; }
     .nb:hover { border-color: rgba(206,255,0,.5); color: #fff; }
-    .nb.sel { background: var(--acc); color: var(--dark); border-color: var(--acc); font-weight: 900; }
-
-    .upload-area {
-      border: 1.5px dashed rgba(255,255,255,.15);
-      border-radius: 10px; padding: 24px;
-      text-align: center; cursor: pointer;
-      transition: all .2s; position: relative; overflow: hidden;
-    }
-    .upload-area:hover { border-color: rgba(206,255,0,.4); background: rgba(206,255,0,.03); }
-    .upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 2; }
-    .prev-img { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; margin: 0 auto 10px; display: block; border: 2px solid var(--acc); }
-    .upload-ico { font-size: 28px; margin-bottom: 8px; }
-    .upload-hint { font-size: 13px; color: var(--muted); line-height: 1.5; }
-    .upload-hint small { display: block; font-size: 11px; margin-top: 4px; opacity: .6; }
-
+    .nb.sel { background: var(--acc); color: var(--dark); border-color: var(--acc); }
     .err { font-size: 11px; color: #ff6b6b; margin-top: 6px; display: none; }
     .err.on { display: block; }
 
-    /* Email match status */
-    .match-status { display: none; margin-top: 8px; font-size: 12px; padding: 8px 12px; border-radius: 6px; font-weight: 600; }
-    .match-status.found { display: flex; align-items: center; gap: 6px; background: rgba(206,255,0,.1); color: var(--acc); border: 1px solid rgba(206,255,0,.2); }
-    .match-status.notfound { display: flex; align-items: center; gap: 6px; background: rgba(255,100,100,.1); color: #ff9999; border: 1px solid rgba(255,100,100,.2); }
+    /* Email status */
+    .match-status { display: none; margin-top: 8px; font-size: 12px; padding: 10px 14px; border-radius: 6px; font-weight: 600; line-height: 1.4; }
+    .match-status.found { display: flex; align-items: center; gap: 8px; background: rgba(206,255,0,.08); color: var(--acc); border: 1px solid rgba(206,255,0,.18); }
+    .match-status.notfound { display: block; background: rgba(255,100,100,.08); color: #ffaaaa; border: 1px solid rgba(255,100,100,.18); }
+    .match-status.personal { display: block; background: rgba(255,180,0,.08); color: #ffcc66; border: 1px solid rgba(255,180,0,.18); }
 
     .form-nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 28px 32px; }
     .btn-back { background: none; border: none; font-family: 'Barlow',sans-serif; font-size: 13px; color: var(--muted); cursor: pointer; padding: 8px 0; transition: color .15s; }
     .btn-back:hover { color: #fff; }
-    .btn-go {
-      padding: 14px 32px; border-radius: 8px;
-      font-family: 'Barlow Condensed',sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-      cursor: pointer; border: none;
-      background: var(--acc); color: var(--dark);
-      transition: transform .15s, box-shadow .15s;
-    }
-    .btn-go:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(206,255,0,.3); }
-    .btn-go:disabled { opacity: .3; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-go { padding: 14px 32px; border-radius: 8px; font-family: 'Barlow Condensed',sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border: none; background: var(--acc); color: var(--dark); transition: transform .15s, box-shadow .15s; }
+    .btn-go:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(206,255,0,.3); }
+    .btn-go:disabled { opacity: .3; cursor: not-allowed; }
 
-    /* ════════════════════
-       S2 — LOADING
-    ════════════════════ */
+    /* LOADING */
     #s2 { background: var(--dark2); align-items: center; justify-content: center; text-align: center; padding: 40px 28px; }
     .load-ball { font-size: 56px; animation: spin 1.2s linear infinite; margin-bottom: 24px; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -197,24 +95,17 @@
     .ldot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.15); flex-shrink: 0; transition: all .4s; }
     .lstep.on .ldot { background: var(--acc); box-shadow: 0 0 0 3px rgba(206,255,0,.2); }
 
-    /* ════════════════════
-       S3 — RESULT
-    ════════════════════ */
+    /* RESULT */
     #s3 { background: var(--dark2); }
     .result-inner { padding: 28px; }
     .result-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-
-    /* FICHA — canvas container */
     .card-wrap { border-radius: 16px; overflow: hidden; margin-bottom: 20px; background: var(--dark3); }
     #fc { display: block; width: 100%; }
-
     .actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    .abtn { flex: 1; min-width: 120px; padding: 13px 16px; border-radius: 8px; font-family: 'Barlow Condensed',sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; cursor: pointer; border: none; transition: transform .15s, opacity .15s; }
+    .abtn { flex: 1; min-width: 130px; padding: 14px 18px; border-radius: 8px; font-family: 'Barlow Condensed',sans-serif; font-size: 14px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; cursor: pointer; border: none; transition: transform .15s, opacity .15s; }
     .abtn:hover { transform: translateY(-2px); opacity: .9; }
     .abtn.dl { background: var(--acc); color: var(--dark); }
-    .abtn.li { background: #0a66c2; color: #fff; }
     .abtn.rs { background: rgba(255,255,255,.07); color: rgba(255,255,255,.7); border: 1px solid var(--border); }
-
     .err-box { background: rgba(255,80,80,.08); border: 1px solid rgba(255,80,80,.2); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #ff9999; margin-bottom: 16px; display: none; line-height: 1.5; }
     .err-box.on { display: block; }
   </style>
@@ -227,25 +118,20 @@
     <div class="hero-bg"></div>
     <div class="hero-circle"></div>
     <div class="hero-circle"></div>
-
     <div class="lang-bar" style="position:relative;z-index:2;">
       <button class="lb on" onclick="setLang('en')" id="lb-en">EN</button>
       <button class="lb" onclick="setLang('es')" id="lb-es">ES</button>
     </div>
-
     <img class="hero-shirt" src="https://raw.githubusercontent.com/comms-glofy/glofy-assets/refs/heads/main/jersey-glofy.png" alt="" aria-hidden="true">
-
     <div class="hero-top">
       <div class="hero-eyebrow">Glofy · World Cup 2026</div>
       <img class="hero-logo-img" src="https://raw.githubusercontent.com/comms-glofy/glofy-assets/refs/heads/main/logo-rebrand-glofy.png" alt="Glofy">
       <h1 class="hero-headline" id="h-headline"></h1>
       <p class="hero-body" id="h-body"></p>
       <button class="btn-hero" onclick="goTo(1)">
-        <span id="h-cta"></span>
-        <span class="ball">⚽</span>
+        <span id="h-cta"></span><span class="ball">⚽</span>
       </button>
     </div>
-
     <div class="hero-thanks">
       <div class="thanks-icon">🙌</div>
       <div class="thanks-text" id="h-thanks"></div>
@@ -263,30 +149,22 @@
         <span class="form-badge">⚡ Glofy</span>
         <span class="form-title" id="f-title"></span>
       </div>
-
-      <!-- EMAIL -->
       <div class="fg">
         <label class="fl" id="f-l0"></label>
         <input class="fi" id="jemail" type="email" autocomplete="off" oninput="onEmail(this.value)">
         <div class="match-status" id="match-status"></div>
         <p class="err" id="e-email"></p>
       </div>
-
-      <!-- NOMBRE CAMISETA -->
       <div class="fg">
         <label class="fl" id="f-l1"></label>
         <input class="fi" id="jname" type="text" maxlength="12" oninput="this.value=this.value.toUpperCase()">
         <p class="err" id="e-name"></p>
       </div>
-
-      <!-- NÚMERO -->
       <div class="fg">
         <label class="fl" id="f-l2"></label>
         <div class="num-grid" id="numgrid"></div>
         <p class="err" id="e-num"></p>
       </div>
-
-      <!-- POSICIÓN -->
       <div class="fg">
         <label class="fl" id="f-l3"></label>
         <input class="fi" id="jpos" type="text">
@@ -294,7 +172,6 @@
         <p class="err" id="e-pos"></p>
       </div>
     </div>
-
     <div class="form-nav">
       <button class="btn-back" onclick="goTo(0)" id="f-back"></button>
       <button class="btn-go" id="f-go" onclick="validate()" disabled></button>
@@ -326,7 +203,6 @@
       </div>
       <div class="actions">
         <button class="abtn dl" id="r-dl" onclick="dlCard()"></button>
-        <button class="abtn li" id="r-li" onclick="copySlack()"></button>
         <button class="abtn rs" id="r-rs" onclick="goTo(0)"></button>
       </div>
     </div>
@@ -334,94 +210,98 @@
 
 </div>
 <script>
-/* ══════════════════════════════════
-   ASSETS
-══════════════════════════════════ */
-const LOGO_URL   = 'https://raw.githubusercontent.com/comms-glofy/glofy-assets/refs/heads/main/logo-rebrand-glofy.png';
-const PHOTOS_BASE = 'https://raw.githubusercontent.com/comms-glofy/glofy-assets/refs/heads/main/players/';
+/* ══ ASSETS ══ */
+const LOGO_URL    = 'https://raw.githubusercontent.com/comms-glofy/glofy-assets/refs/heads/main/logo-rebrand-glofy.png';
+const PHOTOS_BASE = 'https://raw.githubusercontent.com/comms-glofy/glofy-worldcup2026/refs/heads/main/players/';
+const PLAYERS_JSON = 'https://raw.githubusercontent.com/comms-glofy/glofy-worldcup2026/refs/heads/main/players.json';
 
-/* ══════════════════════════════════
-   PLAYERS MAP
-   Clave: mail corporativo (lowercase)
-   Valor: nombre del archivo de foto en /players/
-   Agregá una línea por cada colaborador
-══════════════════════════════════ */
-const PLAYERS = {
-  'inaki.ibargoyen@glofy.co':    'inaki-ibargoyen.png',
-  // 'agus@glofy.com':  'agus-lopez.jpg',
-  // Agregá más colaboradores acá
-};
+/* ══ PLAYERS — cargado desde players.json ══ */
+let PLAYERS = {};
+let playersLoaded = false;
 
-/* ══════════════════════════════════
-   TRANSLATIONS
-══════════════════════════════════ */
+fetch(PLAYERS_JSON)
+  .then(r => r.json())
+  .then(data => {
+    // Normalizar todas las keys a lowercase por seguridad
+    Object.keys(data).forEach(k => { PLAYERS[k.toLowerCase()] = data[k]; });
+    playersLoaded = true;
+    const emailInput = document.getElementById('jemail');
+    if (emailInput && emailInput.value) onEmail(emailInput.value);
+  })
+  .catch(() => {
+    playersLoaded = true; // aun si falla, dejamos avanzar para no bloquear
+    console.warn('players.json no disponible');
+  });
+
+/* ══ DOMINIOS CORPORATIVOS CONOCIDOS ══
+   Usados para detectar mails personales y dar mensaje amable
+*/
+const CORPORATE_DOMAINS = ['glofy.co','glofystaffing.com','glofy.com'];
+
+function isPersonalEmail(email) {
+  const personalDomains = ['gmail.com','hotmail.com','outlook.com','yahoo.com','icloud.com','live.com','protonmail.com','me.com'];
+  const domain = email.split('@')[1] || '';
+  return personalDomains.includes(domain.toLowerCase());
+}
+
+/* ══ TRANSLATIONS ══ */
 const T = {
   en: {
-    hHeadline: 'Every team\nneeds <em>its</em>\nplayers.',
-    hBody: 'A World Cup only makes sense when <strong>the whole squad shows up.</strong> This is our way of putting everyone on the field — because at Glofy, we don\'t just work together. <strong>We play together.</strong>',
+    hHeadline: 'Every team needs <em>its</em> players.',
+    hBody: 'A World Cup only makes sense when <strong>the whole squad shows up.</strong> This is our way of putting everyone on the field. Because at Glofy, we don\'t just work together. <strong>We play together.</strong>',
     hCta: 'Get my jersey',
     hThanks: '<strong>Thank you for being part of this team.</strong><br>Glofy wouldn\'t be what it is without the people who show up, push forward, and make things happen — every single day. That\'s you.',
     fTitle: 'YOUR DETAILS',
-    fL0: 'Corporate email', fP0: 'you@glofy.com',
+    fL0: 'Corporate email', fP0: 'name@glofy.co',
     fL1: 'Name on the jersey', fP1: 'E.g. GARCÍA',
     fL2: 'Your number',
     fL3: 'Your position', fP3: 'Your real role or a football position',
     fH3: 'e.g. Tech Lead, Head of Comms, Striker, Midfielder...',
     fBack: '← Back', fGo: 'Generate my card',
-    eEmail: 'Enter your @glofy.com email.',
-    eEmailNF: 'Email not found. Make sure to use your corporate email.',
-    eN: 'Enter a name.', eP: 'Enter your position.',
+    eEmail: 'Enter your corporate email.', eN: 'Enter a name.', eP: 'Enter your position.',
     lTitle: 'BUILDING YOUR CARD', lSub: 'Hang tight — this takes a few seconds',
     ls0: 'Loading your jersey photo', ls1: 'Composing your card', ls2: 'Almost there',
-    rTitle: 'YOUR CARD',
-    rDl: '⬇ Download', rLi: '🔗 Copy for LinkedIn', rRs: '↩ New card',
-    shareText: (n,num,p) => `⚡ GLOFY | World Cup 2026\n\n👕 ${n} #${num} | ${p}\n\n"Play your best game — every day."\n\n#WorldCup2026 #Glofy #WePlayTogether`,
-    matchFound: '✓ Photo found — you\'re in the squad!',
-    matchNot: '✗ Email not found in our roster.',
+    rTitle: 'YOUR CARD', rDl: '⬇ Download', rRs: '↩ New card',
+    matchFound: '✓ You\'re in the squad!',
+    matchNot: 'Email not found in our roster. Make sure you\'re using your exact corporate email.',
+    matchPersonal: 'That looks like a personal email. Use your corporate email (name@glofy.co or similar).',
+    matchLoading: 'Checking your email...',
   },
   es: {
-    hHeadline: 'Todo equipo\nnecesita <em>sus</em>\njugadores.',
-    hBody: 'Un Mundial solo tiene sentido cuando <strong>todo el equipo está en la cancha.</strong> Esta es nuestra forma de poner a todos en el campo — porque en Glofy, no solo trabajamos juntos. <strong>Jugamos juntos.</strong>',
+    hHeadline: 'Todo equipo necesita <em>sus</em> jugadores.',
+    hBody: 'Un Mundial solo tiene sentido cuando <strong>todo el equipo está en la cancha.</strong> Esta es nuestra forma de poner a todos en el campo. Porque en Glofy, no solo trabajamos juntos. <strong>Jugamos juntos.</strong>',
     hCta: 'Quiero mi camiseta',
     hThanks: '<strong>Gracias por ser parte de este equipo.</strong><br>Glofy no sería lo que es sin las personas que aparecen, empujan y hacen que las cosas pasen — todos los días. Eso sos vos.',
     fTitle: 'TUS DATOS',
-    fL0: 'Mail corporativo', fP0: 'vos@glofy.com',
+    fL0: 'Mail corporativo', fP0: 'nombre@glofy.co',
     fL1: 'Nombre en la camiseta', fP1: 'Ej: GARCÍA',
     fL2: 'Tu número',
     fL3: 'Tu posición', fP3: 'Tu puesto real o una posición futbolística',
     fH3: 'ej: Tech Lead, Head of Comms, Delantero, Mediocampista...',
     fBack: '← Volver', fGo: 'Generar mi ficha',
-    eEmail: 'Ingresá tu mail @glofy.com.',
-    eEmailNF: 'Mail no encontrado. Usá tu mail corporativo.',
-    eN: 'Ingresá un nombre.', eP: 'Ingresá tu posición.',
+    eEmail: 'Ingresá tu mail corporativo.', eN: 'Ingresá un nombre.', eP: 'Ingresá tu posición.',
     lTitle: 'GENERANDO TU FICHA', lSub: 'Un segundo — ya casi está',
     ls0: 'Cargando tu foto con camiseta', ls1: 'Componiendo tu ficha', ls2: 'Últimos toques',
-    rTitle: 'TU FICHA',
-    rDl: '⬇ Descargar', rLi: '🔗 Copiar para LinkedIn', rRs: '↩ Nueva ficha',
-    shareText: (n,num,p) => `⚡ GLOFY | World Cup 2026\n\n👕 ${n} #${num} | ${p}\n\n"Play your best game — every day."\n\n#WorldCup2026 #Glofy #JugamosJuntos`,
-    matchFound: '✓ Foto encontrada — ¡estás en el plantel!',
-    matchNot: '✗ Mail no encontrado en el plantel.',
+    rTitle: 'TU FICHA', rDl: '⬇ Descargar', rRs: '↩ Nueva ficha',
+    matchFound: '✓ ¡Estás en el plantel!',
+    matchNot: 'Mail no encontrado. Asegurate de usar exactamente tu mail corporativo.',
+    matchPersonal: 'Eso parece un mail personal. Usá tu mail corporativo (nombre@glofy.co o similar).',
+    matchLoading: 'Verificando tu mail...',
   }
 };
 
-/* ══════════════════════════════════
-   STATE
-══════════════════════════════════ */
+/* ══ STATE ══ */
 let lang = 'en';
 let jemail = '', jname = '', jnum = 10, jpos = '';
 let playerPhotoUrl = null;
 
-/* ══════════════════════════════════
-   LANG
-══════════════════════════════════ */
+/* ══ LANG ══ */
 function applyLang() {
   const t = T[lang];
-  // Hero
   document.getElementById('h-headline').innerHTML = t.hHeadline.replace(/\n/g,'<br>');
   document.getElementById('h-body').innerHTML = t.hBody;
   document.getElementById('h-cta').textContent = t.hCta;
   document.getElementById('h-thanks').innerHTML = t.hThanks;
-  // Form
   document.getElementById('f-title').textContent = t.fTitle;
   document.getElementById('f-l0').textContent = t.fL0;
   document.getElementById('jemail').placeholder = t.fP0;
@@ -436,43 +316,56 @@ function applyLang() {
   document.getElementById('e-email').textContent = t.eEmail;
   document.getElementById('e-name').textContent = t.eN;
   document.getElementById('e-pos').textContent = t.eP;
-  // Loading
   document.getElementById('l-title').textContent = t.lTitle;
   document.getElementById('l-sub').textContent = t.lSub;
   document.getElementById('ls0t').textContent = t.ls0;
   document.getElementById('ls1t').textContent = t.ls1;
   document.getElementById('ls2t').textContent = t.ls2;
-  // Result
   document.getElementById('r-title').textContent = t.rTitle;
   document.getElementById('r-dl').textContent = t.rDl;
-  document.getElementById('r-li').textContent = t.rLi;
   document.getElementById('r-rs').textContent = t.rRs;
-  // Switchers
   ['en','es'].forEach(l => {
     document.getElementById('lb-'+l).classList.toggle('on', l===lang);
     document.getElementById('lb2-'+l).classList.toggle('on', l===lang);
   });
-  // Re-check email status if already entered
   if (jemail) onEmail(jemail);
 }
 function setLang(l) { lang = l; applyLang(); }
 
-/* ══════════════════════════════════
-   EMAIL MATCH
-══════════════════════════════════ */
+/* ══ EMAIL MATCH ══ */
 function onEmail(val) {
   jemail = val.trim().toLowerCase();
   const status = document.getElementById('match-status');
-  const t = T[lang];
   const goBtn = document.getElementById('f-go');
+  const t = T[lang];
 
+  // Limpiar si está vacío o sin @
   if (!jemail || !jemail.includes('@')) {
     status.className = 'match-status';
+    status.textContent = '';
     goBtn.disabled = true;
     playerPhotoUrl = null;
     return;
   }
 
+  // Detectar mail personal
+  if (isPersonalEmail(jemail)) {
+    status.className = 'match-status personal';
+    status.textContent = t.matchPersonal;
+    goBtn.disabled = true;
+    playerPhotoUrl = null;
+    return;
+  }
+
+  // Si players.json todavía está cargando
+  if (!playersLoaded) {
+    status.className = 'match-status personal';
+    status.textContent = t.matchLoading;
+    goBtn.disabled = true;
+    return;
+  }
+
+  // Buscar en el roster
   const file = PLAYERS[jemail];
   if (file) {
     playerPhotoUrl = PHOTOS_BASE + file;
@@ -487,9 +380,7 @@ function onEmail(val) {
   }
 }
 
-/* ══════════════════════════════════
-   NUMBERS
-══════════════════════════════════ */
+/* ══ NUMBERS ══ */
 function buildNums() {
   const g = document.getElementById('numgrid'); g.innerHTML = '';
   [1,2,3,4,5,6,7,8,9,10,11,17,21,23,99].forEach(n => {
@@ -502,9 +393,7 @@ function buildNums() {
   jnum = 10;
 }
 
-/* ══════════════════════════════════
-   NAVIGATION
-══════════════════════════════════ */
+/* ══ NAVIGATION ══ */
 function goTo(n) {
   document.querySelectorAll('.screen').forEach((s,i) => s.classList.toggle('active', i===n));
   window.scrollTo(0,0);
@@ -521,9 +410,7 @@ function validate() {
   if (ok) buildResult();
 }
 
-/* ══════════════════════════════════
-   LOADING STEPS
-══════════════════════════════════ */
+/* ══ LOADING ══ */
 function setStep(n) {
   ['ls0','ls1','ls2'].forEach((id,i) => {
     const el = document.getElementById(id);
@@ -532,22 +419,13 @@ function setStep(n) {
   });
 }
 
-/* ══════════════════════════════════
-   BUILD RESULT
-══════════════════════════════════ */
+/* ══ BUILD RESULT ══ */
 async function buildResult() {
   goTo(2); setStep(0);
   document.getElementById('errbox').classList.remove('on');
-
   setTimeout(() => setStep(1), 1200);
   setTimeout(() => setStep(2), 2400);
-
-  // Preload logo and player photo
-  const [logoImg, playerImg] = await Promise.all([
-    loadImg(LOGO_URL),
-    loadImg(playerPhotoUrl)
-  ]);
-
+  const [logoImg, playerImg] = await Promise.all([loadImg(LOGO_URL), loadImg(playerPhotoUrl)]);
   await buildCard(logoImg, playerImg);
   setTimeout(() => goTo(3), 600);
 }
@@ -561,144 +439,158 @@ function loadImg(src) {
   });
 }
 
-/* ══════════════════════════════════
-   CANVAS — Ficha 4:5 vertical
-   800 × 1000 px
-══════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   CANVAS — Ficha 4:5 · 800×1000px
+   Diseño: foto full-bleed con overlay gradiente,
+   datos en zona inferior con jerarquía clara,
+   logo Glofy, footer branded
+══════════════════════════════════════════════ */
 async function buildCard(logoImg, playerImg) {
   const canvas = document.getElementById('fc');
   const ctx = canvas.getContext('2d');
   const W = 800, H = 1000;
   canvas.width = W; canvas.height = H;
 
-  // ── BG oscuro con textura sutil ──
-  ctx.fillStyle = '#0e0e0e';
+  /* ── 1. BG BASE ── */
+  ctx.fillStyle = '#0a0a0a';
   ctx.fillRect(0, 0, W, H);
 
-  // Grid lines
-  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
-  ctx.lineWidth = 1;
-  for (let x = 0; x < W; x += 32) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-  for (let y = 0; y < H; y += 32) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  /* ── 2. FOTO FULL-BLEED (zona superior) ── */
+  if (playerImg) {
+    const sc = Math.max(W / playerImg.width, 720 / playerImg.height);
+    const sw = playerImg.width * sc, sh = playerImg.height * sc;
+    ctx.drawImage(playerImg, (W-sw)/2, 0, sw, Math.min(sh, 720));
+  }
 
-  // Glow radial top
-  const grd = ctx.createRadialGradient(W/2, 0, 0, W/2, 0, 500);
-  grd.addColorStop(0, 'rgba(206,255,0,0.08)');
-  grd.addColorStop(1, 'transparent');
-  ctx.fillStyle = grd;
-  ctx.fillRect(0, 0, W, H);
+  /* ── 3. OVERLAY GRADIENTE sobre la foto ── */
+  // Degradado de abajo: negro sólido que aparece en el tercio inferior
+  const photoOverlay = ctx.createLinearGradient(0, 340, 0, 720);
+  photoOverlay.addColorStop(0, 'rgba(10,10,10,0)');
+  photoOverlay.addColorStop(0.5, 'rgba(10,10,10,0.6)');
+  photoOverlay.addColorStop(1, 'rgba(10,10,10,1)');
+  ctx.fillStyle = photoOverlay;
+  ctx.fillRect(0, 0, W, 720);
 
-  // ── Accent top bar ──
+  // Overlay lateral izquierdo sutil para legibilidad del header
+  const sideOverlay = ctx.createLinearGradient(0, 0, 200, 0);
+  sideOverlay.addColorStop(0, 'rgba(10,10,10,0.5)');
+  sideOverlay.addColorStop(1, 'rgba(10,10,10,0)');
+  ctx.fillStyle = sideOverlay;
+  ctx.fillRect(0, 0, 200, 120);
+
+  /* ── 4. ZONA INFERIOR (negro sólido desde y=720) ── */
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(0, 720, W, H - 720);
+
+  /* ── 5. ACCENT BAR TOP ── */
   ctx.fillStyle = '#ceff00';
-  ctx.fillRect(0, 0, W, 6);
+  ctx.fillRect(0, 0, W, 5);
 
-  // ── Watermark número grande ──
+  /* ── 6. HEADER (encima de la foto, esquina sup izq) ── */
+  ctx.fillStyle = 'rgba(206,255,0,0.8)';
+  ctx.font = '700 10px "Barlow Condensed", sans-serif';
+  ctx.letterSpacing = '3px';
+  ctx.fillText('WORLD CUP 2026', 28, 36);
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '400 10px "Barlow Condensed", sans-serif';
+  ctx.letterSpacing = '2px';
+  ctx.fillText('PLAYER CARD', 28, 52);
+  ctx.letterSpacing = '0px';
+
+  /* ── 7. NÚMERO WATERMARK (fondo, zona derecha) ── */
   ctx.save();
-  ctx.globalAlpha = 0.06;
+  ctx.globalAlpha = 0.07;
   ctx.fillStyle = '#ceff00';
-  ctx.font = '900 340px "Bebas Neue", sans-serif';
+  ctx.font = '900 320px "Bebas Neue", sans-serif';
   ctx.textAlign = 'right';
-  ctx.fillText(jnum, W + 20, 420);
+  ctx.fillText(jnum, W + 10, 700);
   ctx.restore();
   ctx.textAlign = 'left';
 
-  // ── Header: WORLD CUP 2026 ──
-  ctx.fillStyle = 'rgba(206,255,0,0.65)';
-  ctx.font = '600 11px "Barlow Condensed", sans-serif';
-  ctx.fillText('WORLD CUP 2026', 36, 40);
-  ctx.fillStyle = 'rgba(255,255,255,0.28)';
-  ctx.font = '400 11px "Barlow Condensed", sans-serif';
-  ctx.fillText('⚡ GLOFY — PLAYER CARD', 36, 58);
+  /* ── 8. LÍNEA DIVISORIA ACCENT ── */
+  ctx.strokeStyle = '#ceff00';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(28, 728); ctx.lineTo(130, 728); ctx.stroke();
 
-  // ── Foto del jugador (zona central) ──
-  if (playerImg) {
-    // Marco con clip redondeado
-    const px = 100, py = 80, pw = 600, ph = 580;
-    ctx.save();
-    roundRect(ctx, px, py, pw, ph, 20);
-    ctx.clip();
-    // Cover fit
-    const sc = Math.max(pw / playerImg.width, ph / playerImg.height);
-    const sw = playerImg.width * sc, sh = playerImg.height * sc;
-    ctx.drawImage(playerImg, px + (pw-sw)/2, py + (ph-sh)/2, sw, sh);
-    ctx.restore();
-
-    // Borde verde lima
-    ctx.strokeStyle = '#ceff00';
-    ctx.lineWidth = 3;
-    roundRect(ctx, px, py, pw, ph, 20);
-    ctx.stroke();
-
-    // Gradiente bottom sobre la foto para legibilidad
-    const fadeGrd = ctx.createLinearGradient(0, py+ph-200, 0, py+ph);
-    fadeGrd.addColorStop(0, 'transparent');
-    fadeGrd.addColorStop(1, 'rgba(14,14,14,0.85)');
-    ctx.fillStyle = fadeGrd;
-    roundRect(ctx, px, py, pw, ph, 20);
-    ctx.fill();
+  /* ── 9. NOMBRE ── */
+  // Ajustar tamaño de fuente si el nombre es muy largo
+  let nameFontSize = 88;
+  ctx.font = `900 ${nameFontSize}px "Bebas Neue", sans-serif`;
+  while (ctx.measureText(jname).width > W - 56 && nameFontSize > 48) {
+    nameFontSize -= 4;
+    ctx.font = `900 ${nameFontSize}px "Bebas Neue", sans-serif`;
   }
-
-  // ── Nombre ──
   ctx.fillStyle = '#ffffff';
-  ctx.font = '900 72px "Bebas Neue", sans-serif';
-  ctx.letterSpacing = '2px';
-  ctx.fillText(jname, 36, 738);
+  ctx.fillText(jname, 28, 740 + (88 - nameFontSize) * 0.5);
 
-  // ── Número ──
+  /* ── 10. NÚMERO + POSICIÓN en la misma línea ── */
+  const rowY = 800;
   ctx.fillStyle = '#ceff00';
-  ctx.font = '700 46px "Bebas Neue", sans-serif';
-  ctx.fillText('#' + jnum, 36, 786);
+  ctx.font = '700 38px "Bebas Neue", sans-serif';
+  ctx.fillText('#' + jnum, 28, rowY);
 
-  // ── Badge posición ── (dinámico, no se corta)
-  ctx.font = 'bold 13px "Barlow Condensed", sans-serif';
-  const posText = jpos.toUpperCase();
-  const maxBW = W - 72;
-  const words = posText.split(' ');
-  const lines = []; let cur = '';
-  words.forEach(w => {
-    const test = cur ? cur + ' ' + w : w;
-    if (ctx.measureText(test).width > maxBW - 28 && cur) { lines.push(cur); cur = w; }
-    else cur = test;
-  });
-  if (cur) lines.push(cur);
-  const bH = lines.length * 20 + 16;
-  const bY = 800;
-  ctx.fillStyle = '#ceff00';
-  roundRect(ctx, 36, bY, maxBW, bH, 6); ctx.fill();
-  ctx.fillStyle = '#0e0e0e';
-  lines.forEach((line, i) => ctx.fillText(line, 52, bY + 24 + i * 20));
+  // Separador
+  const numW = ctx.measureText('#' + jnum).width;
+  ctx.fillStyle = 'rgba(255,255,255,0.2)';
+  ctx.fillRect(28 + numW + 14, rowY - 28, 1.5, 30);
 
-  const afterBadge = bY + bH + 24;
+  // Posición — en mayúsculas, truncada si necesario
+  ctx.fillStyle = 'rgba(255,255,255,0.65)';
+  ctx.font = '600 16px "Barlow Condensed", sans-serif';
+  ctx.letterSpacing = '1px';
+  const posStart = 28 + numW + 30;
+  const posMaxW = W - posStart - 28;
+  let posText = jpos.toUpperCase();
+  // Truncar si no entra
+  while (ctx.measureText(posText).width > posMaxW && posText.length > 3) {
+    posText = posText.slice(0, -1);
+  }
+  if (posText !== jpos.toUpperCase()) posText += '...';
+  ctx.fillText(posText, posStart, rowY - 4);
+  ctx.letterSpacing = '0px';
 
-  // ── Divider ──
-  ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(36, afterBadge); ctx.lineTo(W-36, afterBadge); ctx.stroke();
+  /* ── 11. DIVIDER ── */
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(28, 826); ctx.lineTo(W-28, 826); ctx.stroke();
 
-  // ── Frase ──
-  ctx.fillStyle = 'rgba(255,255,255,0.4)';
-  ctx.font = 'italic 400 16px "Barlow", sans-serif';
+  /* ── 12. FRASE + LOGO ── */
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = 'italic 400 15px "Barlow", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('Play your best game — every day.', W/2, afterBadge + 30);
+  ctx.fillText('Play your best game — every day.', W/2, 858);
 
-  // ── Logo Glofy ──
   if (logoImg) {
-    const lH = 28, lW = logoImg.width * (lH / logoImg.height);
-    ctx.drawImage(logoImg, W/2 - lW/2, afterBadge + 44, lW, lH);
+    const lH = 30, lW = logoImg.width * (lH / logoImg.height);
+    ctx.globalAlpha = 0.9;
+    ctx.drawImage(logoImg, W/2 - lW/2, 872, lW, lH);
+    ctx.globalAlpha = 1;
   } else {
     ctx.fillStyle = '#ceff00';
-    ctx.font = '700 16px "Bebas Neue", sans-serif';
-    ctx.fillText('⚡ GLOFY', W/2, afterBadge + 62);
+    ctx.font = '700 18px "Bebas Neue", sans-serif';
+    ctx.fillText('⚡ GLOFY', W/2, 895);
   }
   ctx.textAlign = 'left';
 
-  // ── Footer strip ──
+  /* ── 13. FOOTER ── */
+  // Fondo footer con gradiente sutil
+  const footerGrd = ctx.createLinearGradient(0, 940, 0, H);
+  footerGrd.addColorStop(0, 'rgba(206,255,0,0)');
+  footerGrd.addColorStop(0.3, '#ceff00');
+  footerGrd.addColorStop(1, '#ceff00');
+  ctx.fillStyle = footerGrd;
+  ctx.fillRect(0, 946, W, H - 946);
+
   ctx.fillStyle = '#ceff00';
-  ctx.fillRect(0, H-40, W, 40);
-  ctx.fillStyle = '#0e0e0e';
-  ctx.font = '700 10px "Barlow Condensed", sans-serif';
+  ctx.fillRect(0, 958, W, H - 958);
+
+  ctx.fillStyle = 'rgba(0,0,0,0.65)';
+  ctx.font = '700 9px "Barlow Condensed", sans-serif';
+  ctx.letterSpacing = '2.5px';
   ctx.textAlign = 'center';
-  ctx.fillText('WORLD CUP 2026  •  GLOFY  •  WE PLAY TOGETHER', W/2, H-15);
+  ctx.fillText('WORLD CUP 2026  ·  GLOFY  ·  WE PLAY TOGETHER', W/2, H - 16);
   ctx.textAlign = 'left';
+  ctx.letterSpacing = '0px';
 }
 
 function roundRect(ctx, x, y, w, h, r) {
@@ -710,9 +602,7 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-/* ══════════════════════════════════
-   ACTIONS
-══════════════════════════════════ */
+/* ══ DOWNLOAD ══ */
 function dlCard() {
   const a = document.createElement('a');
   a.download = 'glofy-worldcup2026-' + jname.toLowerCase() + '.png';
@@ -720,24 +610,13 @@ function dlCard() {
   a.click();
 }
 
-function copySlack() {
-  const txt = T[lang].shareText(jname, jnum, jpos);
-  navigator.clipboard.writeText(txt).then(() => {
-    const b = document.getElementById('r-li');
-    const orig = b.textContent;
-    b.textContent = lang==='en' ? '✓ Copied!' : '✓ ¡Copiado!';
-    setTimeout(() => b.textContent = orig, 2200);
-  });
-}
-
-/* ══════════════════════════════════
-   INIT
-══════════════════════════════════ */
+/* ══ INIT ══ */
 buildNums();
 applyLang();
 goTo(0);
 </script>
 </body>
 </html>
+
 
 
