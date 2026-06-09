@@ -448,57 +448,47 @@ function loadImg(src) {
 async function buildCard(logoImg, playerImg) {
   const canvas = document.getElementById('fc');
   const ctx = canvas.getContext('2d');
-  const W = 800, H = 1000;
-  canvas.width = W; canvas.height = H; // altura provisional, se recalcula con la foto
-
-  /* ── 1. BG BASE ── */
-  ctx.fillStyle = '#0a0a0a';
-  ctx.fillRect(0, 0, W, H);
-
-  /* ── 2. FOTO COMPLETA ── */
-  // La foto ocupa todo el ancho y se muestra completa sin recortar nada.
-  // Calculamos la altura proporcional al ancho del canvas.
-  // La zona de datos queda debajo de la foto.
-  let photoH = 720; // fallback
-  if (playerImg) {
-    // Escalar al ancho exacto del canvas, mostrar la foto completa
-    const sc = W / playerImg.width;
-    const sw = W;
-    const sh = playerImg.height * sc;
-    photoH = Math.round(sh); // altura real de la foto escalada
-    ctx.drawImage(playerImg, 0, 0, sw, sh);
-  }
-
-  // Recalcular H dinámicamente según la foto
-  // Zona de datos: 280px fijos debajo de la foto
+  const W = 800;
   const dataZoneH = 280;
+
+  // ── Calcular dimensiones ANTES de tocar el canvas ──
+  // Cambiar canvas.width/height resetea el contexto, así que lo hacemos una sola vez
+  const photoH = playerImg ? Math.round(playerImg.height * (W / playerImg.width)) : 720;
   const totalH = photoH + dataZoneH;
+
+  // Setear dimensiones UNA SOLA VEZ
+  canvas.width = W;
   canvas.height = totalH;
 
-  // Redibujar BG completo ahora que sabemos el alto real
+  // ── 1. BG completo ──
   ctx.fillStyle = '#0a0a0a';
-  ctx.fillRect(0, photoH, W, dataZoneH);
+  ctx.fillRect(0, 0, W, totalH);
 
-  /* ── 3. OVERLAY GRADIENTE sobre la foto (sutil, solo parte inferior) ── */
-  const photoOverlay = ctx.createLinearGradient(0, photoH - 240, 0, photoH);
+  // ── 2. FOTO completa, ancho 100%, sin recorte ──
+  if (playerImg) {
+    ctx.drawImage(playerImg, 0, 0, W, photoH);
+  }
+
+  // ── 3. Overlay gradiente (solo parte inferior de la foto) ──
+  const photoOverlay = ctx.createLinearGradient(0, photoH - 220, 0, photoH);
   photoOverlay.addColorStop(0, 'rgba(10,10,10,0)');
-  photoOverlay.addColorStop(0.5, 'rgba(10,10,10,0.35)');
+  photoOverlay.addColorStop(0.55, 'rgba(10,10,10,0.35)');
   photoOverlay.addColorStop(1, 'rgba(10,10,10,0.88)');
   ctx.fillStyle = photoOverlay;
-  ctx.fillRect(0, photoH - 240, W, 240);
+  ctx.fillRect(0, photoH - 220, W, 220);
 
-  // Overlay lateral izquierdo sutil para legibilidad del header
-  const sideOverlay = ctx.createLinearGradient(0, 0, 200, 0);
-  sideOverlay.addColorStop(0, 'rgba(10,10,10,0.45)');
+  // Overlay lateral izquierdo para legibilidad del header
+  const sideOverlay = ctx.createLinearGradient(0, 0, 180, 0);
+  sideOverlay.addColorStop(0, 'rgba(10,10,10,0.42)');
   sideOverlay.addColorStop(1, 'rgba(10,10,10,0)');
   ctx.fillStyle = sideOverlay;
-  ctx.fillRect(0, 0, 200, 120);
+  ctx.fillRect(0, 0, 180, 110);
 
-  /* ── 5. ACCENT BAR TOP ── */
+  // ── 4. Accent bar top ──
   ctx.fillStyle = '#ceff00';
   ctx.fillRect(0, 0, W, 5);
 
-  /* ── 6. HEADER (encima de la foto, esquina sup izq) ── */
+  // ── 5. Header ──
   ctx.fillStyle = 'rgba(206,255,0,0.8)';
   ctx.font = '700 10px "Barlow Condensed", sans-serif';
   ctx.letterSpacing = '3px';
@@ -509,7 +499,7 @@ async function buildCard(logoImg, playerImg) {
   ctx.fillText('PLAYER CARD', 28, 52);
   ctx.letterSpacing = '0px';
 
-  /* ── 7. NÚMERO WATERMARK (zona derecha, sobre la foto) ── */
+  // ── 6. Número watermark ──
   ctx.save();
   ctx.globalAlpha = 0.07;
   ctx.fillStyle = '#ceff00';
@@ -519,7 +509,7 @@ async function buildCard(logoImg, playerImg) {
   ctx.restore();
   ctx.textAlign = 'left';
 
-  /* ── 8. NOMBRE ── */
+  // ── 7. Nombre ──
   const nameY = photoH + 68;
   let nameFontSize = 88;
   ctx.font = `900 ${nameFontSize}px "Bebas Neue", sans-serif`;
@@ -530,13 +520,13 @@ async function buildCard(logoImg, playerImg) {
   ctx.fillStyle = '#ffffff';
   ctx.fillText(jname, 28, nameY);
 
-  /* ── 10. NÚMERO + POSICIÓN ── */
+  // ── 8. Número + Posición ──
   const rowY = nameY + 58;
   ctx.fillStyle = '#ceff00';
   ctx.font = '700 38px "Bebas Neue", sans-serif';
   ctx.fillText('#' + jnum, 28, rowY);
-
   const numW = ctx.measureText('#' + jnum).width;
+
   ctx.fillStyle = 'rgba(255,255,255,0.2)';
   ctx.fillRect(28 + numW + 14, rowY - 28, 1.5, 30);
 
@@ -553,13 +543,13 @@ async function buildCard(logoImg, playerImg) {
   ctx.fillText(posText, posStart, rowY - 4);
   ctx.letterSpacing = '0px';
 
-  /* ── 11. DIVIDER ── */
+  // ── 9. Divider ──
   const divY = rowY + 30;
   ctx.strokeStyle = 'rgba(255,255,255,0.08)';
   ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(28, divY); ctx.lineTo(W-28, divY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(28, divY); ctx.lineTo(W - 28, divY); ctx.stroke();
 
-  /* ── 12. LOGO ── */
+  // ── 10. Logo ──
   ctx.textAlign = 'center';
   if (logoImg) {
     const lH = 36, lW = logoImg.width * (lH / logoImg.height);
@@ -573,7 +563,7 @@ async function buildCard(logoImg, playerImg) {
   }
   ctx.textAlign = 'left';
 
-  /* ── 13. FOOTER ── */
+  // ── 11. Footer ──
   ctx.fillStyle = '#ceff00';
   ctx.fillRect(0, totalH - 42, W, 42);
   ctx.fillStyle = 'rgba(0,0,0,0.85)';
@@ -609,3 +599,4 @@ goTo(0);
 </script>
 </body>
 </html>
+
