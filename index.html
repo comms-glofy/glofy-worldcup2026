@@ -75,6 +75,13 @@
     .match-status.notfound { display: block; background: rgba(255,100,100,.08); color: #ffaaaa; border: 1px solid rgba(255,100,100,.18); }
     .match-status.personal { display: block; background: rgba(255,180,0,.08); color: #ffcc66; border: 1px solid rgba(255,180,0,.18); }
 
+    /* QUIZ OPTIONS */
+    .quiz-opts { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+    .qopt { width: 100%; padding: 11px 16px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,.04); color: rgba(255,255,255,.7); font-family: 'Barlow',sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; text-align: left; transition: all .15s; }
+    .qopt:hover { border-color: rgba(206,255,0,.4); color: #fff; }
+    .qopt.sel { border-color: var(--acc); background: rgba(206,255,0,.08); color: #fff; font-weight: 600; }
+    .qopt.sel::after { content: '✓'; float: right; color: var(--acc); font-weight: 700; }
+
     .form-nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 28px 32px; }
     .btn-back { background: none; border: none; font-family: 'Barlow',sans-serif; font-size: 13px; color: var(--muted); cursor: pointer; padding: 8px 0; transition: color .15s; }
     .btn-back:hover { color: #fff; }
@@ -171,6 +178,27 @@
         <p class="fhint" id="f-h3"></p>
         <p class="err" id="e-pos"></p>
       </div>
+
+      <!-- QUIZ Q1 -->
+      <div class="fg">
+        <label class="fl" id="f-q1-label"></label>
+        <div class="quiz-opts" id="q1-opts"></div>
+        <p class="err" id="e-q1"></p>
+      </div>
+
+      <!-- QUIZ Q2 -->
+      <div class="fg">
+        <label class="fl" id="f-q2-label"></label>
+        <div class="quiz-opts" id="q2-opts"></div>
+        <p class="err" id="e-q2"></p>
+      </div>
+
+      <!-- QUIZ Q3 -->
+      <div class="fg">
+        <label class="fl" id="f-q3-label"></label>
+        <div class="quiz-opts" id="q3-opts"></div>
+        <p class="err" id="e-q3"></p>
+      </div>
     </div>
     <div class="form-nav">
       <button class="btn-back" onclick="goTo(0)" id="f-back"></button>
@@ -256,9 +284,16 @@ const T = {
     fL1: 'Name on the jersey', fP1: 'E.g. GARCÍA',
     fL2: 'Your number',
     fL3: 'Your position', fP3: 'Your real role or a football position',
-    fH3: 'e.g. Tech Lead, Head of Comms, Striker, Midfielder...',
+    fH3: 'e.g. CEO, CTO, Striker, Midfielder...',
     fBack: '← Back', fGo: 'Generate my card',
     eEmail: 'Enter your corporate email.', eN: 'Enter a name.', eP: 'Enter your position.',
+    eQ: 'Choose an option to continue.',
+    q1Label: 'How do you tackle challenges?',
+    q1Opts: ['With strategy','With speed','With the team','With data'],
+    q2Label: 'What defines you at work?',
+    q2Opts: ['Vision','Execution','Connection','Resolution'],
+    q3Label: 'How do you make decisions?',
+    q3Opts: ['Fast and decisive','Consulting the team','Analyzing everything','By intuition'],
     lTitle: 'BUILDING YOUR CARD', lSub: 'Hang tight — this takes a few seconds',
     ls0: 'Loading your jersey photo', ls1: 'Composing your card', ls2: 'Almost there',
     rTitle: 'YOUR CARD', rDl: '⬇ Download', rRs: '↩ New card',
@@ -277,9 +312,16 @@ const T = {
     fL1: 'Nombre en la camiseta', fP1: 'Ej: GARCÍA',
     fL2: 'Tu número',
     fL3: 'Tu posición', fP3: 'Tu puesto real o una posición futbolística',
-    fH3: 'ej: Tech Lead, Head of Comms, Delantero, Mediocampista...',
+    fH3: 'ej: CEO, CTO, Delantero, Mediocampista...',
     fBack: '← Volver', fGo: 'Generar mi ficha',
     eEmail: 'Ingresá tu mail corporativo.', eN: 'Ingresá un nombre.', eP: 'Ingresá tu posición.',
+    eQ: 'Elegí una opción para continuar.',
+    q1Label: '¿Cómo encarás los desafíos?',
+    q1Opts: ['Con estrategia','Con velocidad','Con el equipo','Con datos'],
+    q2Label: '¿Qué te define en el trabajo?',
+    q2Opts: ['Visión','Ejecución','Conexión','Resolución'],
+    q3Label: '¿Cómo tomás decisiones?',
+    q3Opts: ['Rápido y decidido','Consultando al equipo','Analizando todo','Por intuición'],
     lTitle: 'GENERANDO TU FICHA', lSub: 'Un segundo — ya casi está',
     ls0: 'Cargando tu foto con camiseta', ls1: 'Componiendo tu ficha', ls2: 'Últimos toques',
     rTitle: 'TU FICHA', rDl: '⬇ Descargar', rRs: '↩ Nueva ficha',
@@ -294,6 +336,7 @@ const T = {
 let lang = 'en';
 let jemail = '', jname = '', jnum = 10, jpos = '';
 let playerPhotoUrl = null;
+let qAnswers = [null, null, null]; // respuestas a las 3 preguntas
 
 /* ══ LANG ══ */
 function applyLang() {
@@ -316,6 +359,11 @@ function applyLang() {
   document.getElementById('e-email').textContent = t.eEmail;
   document.getElementById('e-name').textContent = t.eN;
   document.getElementById('e-pos').textContent = t.eP;
+  // Quiz questions
+  renderQuiz();
+  document.getElementById('e-q1').textContent = t.eQ;
+  document.getElementById('e-q2').textContent = t.eQ;
+  document.getElementById('e-q3').textContent = t.eQ;
   document.getElementById('l-title').textContent = t.lTitle;
   document.getElementById('l-sub').textContent = t.lSub;
   document.getElementById('ls0t').textContent = t.ls0;
@@ -397,6 +445,7 @@ function buildNums() {
 function goTo(n) {
   document.querySelectorAll('.screen').forEach((s,i) => s.classList.toggle('active', i===n));
   window.scrollTo(0,0);
+  if (n === 0) { qAnswers = [null, null, null]; renderQuiz(); }
 }
 function showErr(id, show) { document.getElementById(id).classList.toggle('on', show); }
 
@@ -407,6 +456,9 @@ function validate() {
   if (!playerPhotoUrl) { showErr('e-email', true); ok=false; } else showErr('e-email', false);
   if (!jname) { showErr('e-name', true); ok=false; } else showErr('e-name', false);
   if (!jpos)  { showErr('e-pos', true);  ok=false; } else showErr('e-pos', false);
+  if (qAnswers[0] === null) { showErr('e-q1', true); ok=false; } else showErr('e-q1', false);
+  if (qAnswers[1] === null) { showErr('e-q2', true); ok=false; } else showErr('e-q2', false);
+  if (qAnswers[2] === null) { showErr('e-q3', true); ok=false; } else showErr('e-q3', false);
   if (ok) buildResult();
 }
 
@@ -425,8 +477,9 @@ async function buildResult() {
   document.getElementById('errbox').classList.remove('on');
   setTimeout(() => setStep(1), 1200);
   setTimeout(() => setStep(2), 2400);
+  const stats = calcStats();
   const [logoImg, playerImg] = await Promise.all([loadImg(LOGO_URL), loadImg(playerPhotoUrl)]);
-  await buildCard(logoImg, playerImg);
+  await buildCard(logoImg, playerImg, stats);
   setTimeout(() => goTo(3), 600);
 }
 
@@ -439,17 +492,77 @@ function loadImg(src) {
   });
 }
 
-/* ══════════════════════════════════════════════
-   CANVAS — Ficha 4:5 · 800×1000px
-   Diseño: foto full-bleed con overlay gradiente,
-   datos en zona inferior con jerarquía clara,
-   logo Glofy, footer branded
-══════════════════════════════════════════════ */
-async function buildCard(logoImg, playerImg) {
+/* ══ QUIZ ══ */
+
+// Mapeo: [q1idx][q2idx][q3idx] → [vision, impacto, teamwork]
+// Cada opción de cada pregunta suma puntos a un stat
+// Q1: estrategia→visión, velocidad→impacto, equipo→teamwork, datos→visión
+// Q2: visión→visión, ejecución→impacto, conexión→teamwork, resolución→impacto
+// Q3: rápido→impacto, consultando→teamwork, analizando→visión, intuición→impacto
+const Q_WEIGHTS = [
+  // Q1: [visión, impacto, teamwork]
+  [[5,0,0],[0,5,0],[0,0,5],[4,0,0]],
+  // Q2
+  [[5,0,0],[0,5,0],[0,0,5],[0,4,0]],
+  // Q3
+  [[0,5,0],[0,0,5],[5,0,0],[0,4,0]],
+];
+
+function calcStats() {
+  let scores = [0, 0, 0]; // visión, impacto, teamwork
+  qAnswers.forEach((ans, qi) => {
+    if (ans === null) return;
+    const w = Q_WEIGHTS[qi][ans];
+    scores = scores.map((s, i) => s + w[i]);
+  });
+  // Normalizar a rango 88–99: base 88, max adicional 15 (3 preguntas × 5 pts)
+  const base = 88;
+  const maxExtra = 15;
+  const vals = scores.map(s => Math.round(base + (s / maxExtra) * 11));
+  // Asegurar que no haya dos iguales — si los hay, ajustar ±1
+  if (vals[0] === vals[1]) vals[1] = Math.min(99, vals[1] + 1);
+  if (vals[1] === vals[2]) vals[2] = Math.min(99, vals[2] + 1);
+  if (vals[0] === vals[2]) vals[2] = Math.max(88, vals[2] - 1);
+  return [
+    { label: 'VISIÓN',            label_en: 'VISION',   val: Math.min(99, Math.max(88, vals[0])) },
+    { label: 'IMPACTO',           label_en: 'IMPACT',   val: Math.min(99, Math.max(88, vals[1])) },
+    { label: 'TRABAJO EN EQUIPO', label_en: 'TEAMWORK', val: Math.min(99, Math.max(88, vals[2])) },
+  ];
+}
+
+function renderQuiz() {
+  const t = T[lang];
+  [
+    { labelId: 'f-q1-label', optsId: 'q1-opts', qi: 0, opts: t.q1Opts, labelText: t.q1Label },
+    { labelId: 'f-q2-label', optsId: 'q2-opts', qi: 1, opts: t.q2Opts, labelText: t.q2Label },
+    { labelId: 'f-q3-label', optsId: 'q3-opts', qi: 2, opts: t.q3Opts, labelText: t.q3Label },
+  ].forEach(({ labelId, optsId, qi, opts, labelText }) => {
+    document.getElementById(labelId).textContent = labelText;
+    const container = document.getElementById(optsId);
+    container.innerHTML = '';
+    opts.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'qopt' + (qAnswers[qi] === i ? ' sel' : '');
+      btn.textContent = opt;
+      btn.onclick = () => {
+        qAnswers[qi] = i;
+        container.querySelectorAll('.qopt').forEach((b, j) => {
+          b.classList.toggle('sel', j === i);
+        });
+        document.getElementById('e-q' + (qi+1)).classList.remove('on');
+      };
+      container.appendChild(btn);
+    });
+  });
+}
+
+
+/* ══ CANVAS — buildCard ══ */
+async function buildCard(logoImg, playerImg, stats = []) {
   const canvas = document.getElementById('fc');
   const ctx = canvas.getContext('2d');
   const W = 800;
-  const dataZoneH = 280;
+  const dataZoneH = 360; // nombre + número/pos + divider + stats + logo + footer
 
   // ── Calcular dimensiones ANTES de tocar el canvas ──
   // Cambiar canvas.width/height resetea el contexto, así que lo hacemos una sola vez
@@ -490,13 +603,13 @@ async function buildCard(logoImg, playerImg) {
 
   // ── 5. Header ──
   ctx.fillStyle = 'rgba(206,255,0,0.8)';
-  ctx.font = '700 10px "Barlow Condensed", sans-serif';
+  ctx.font = '700 14px "Barlow Condensed", sans-serif';
   ctx.letterSpacing = '3px';
-  ctx.fillText('WORLD CUP 2026', 28, 36);
-  ctx.fillStyle = 'rgba(255,255,255,0.5)';
-  ctx.font = '400 10px "Barlow Condensed", sans-serif';
+  ctx.fillText('WORLD CUP 2026', 28, 38);
+  ctx.fillStyle = 'rgba(255,255,255,0.55)';
+  ctx.font = '400 13px "Barlow Condensed", sans-serif';
   ctx.letterSpacing = '2px';
-  ctx.fillText('PLAYER CARD', 28, 52);
+  ctx.fillText('PLAYER CARD', 28, 58);
   ctx.letterSpacing = '0px';
 
   // ── 6. Número watermark ──
@@ -530,8 +643,8 @@ async function buildCard(logoImg, playerImg) {
   ctx.fillStyle = 'rgba(255,255,255,0.2)';
   ctx.fillRect(28 + numW + 14, rowY - 28, 1.5, 30);
 
-  ctx.fillStyle = 'rgba(255,255,255,0.65)';
-  ctx.font = '600 16px "Barlow Condensed", sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  ctx.font = '600 20px "Barlow Condensed", sans-serif';
   ctx.letterSpacing = '1px';
   const posStart = 28 + numW + 30;
   const posMaxW = W - posStart - 28;
@@ -549,19 +662,76 @@ async function buildCard(logoImg, playerImg) {
   ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(28, divY); ctx.lineTo(W - 28, divY); ctx.stroke();
 
-  // ── 10. Logo ──
-  ctx.textAlign = 'center';
-  if (logoImg) {
-    const lH = 36, lW = logoImg.width * (lH / logoImg.height);
-    ctx.globalAlpha = 0.95;
-    ctx.drawImage(logoImg, W/2 - lW/2, divY + 22, lW, lH);
-    ctx.globalAlpha = 1;
+  // ── 10. Stats ──
+  if (stats.length > 0) {
+    const statY = divY + 18;
+    const statW = (W - 56) / stats.length; // ancho por stat
+
+    stats.forEach((stat, i) => {
+      const sx = 28 + i * statW;
+      const cx = sx + statW / 2;
+
+      // Valor numérico — grande
+      ctx.fillStyle = '#ceff00';
+      ctx.font = '900 56px "Bebas Neue", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(stat.val, cx, statY + 50);
+
+      // Label — muted pero legible
+      const label = lang === 'en' ? stat.label_en : stat.label;
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.font = '700 13px "Barlow Condensed", sans-serif';
+      ctx.letterSpacing = '1.5px';
+      ctx.fillText(label, cx, statY + 70);
+      ctx.letterSpacing = '0px';
+
+      // Separador vertical entre stats (excepto el último)
+      if (i < stats.length - 1) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(sx + statW, statY + 8);
+        ctx.lineTo(sx + statW, statY + 76);
+        ctx.stroke();
+      }
+    });
+
+    ctx.textAlign = 'left';
+
+    const statDivY = statY + 88;
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(28, statDivY); ctx.lineTo(W - 28, statDivY); ctx.stroke();
+
+    // ── 11. Logo ──
+    ctx.textAlign = 'center';
+    if (logoImg) {
+      const lH = 30, lW = logoImg.width * (lH / logoImg.height);
+      ctx.globalAlpha = 0.95;
+      ctx.drawImage(logoImg, W/2 - lW/2, statDivY + 16, lW, lH);
+      ctx.globalAlpha = 1;
+    } else {
+      ctx.fillStyle = '#ceff00';
+      ctx.font = '700 20px "Bebas Neue", sans-serif';
+      ctx.fillText('⚡ GLOFY', W/2, statDivY + 40);
+    }
+    ctx.textAlign = 'left';
+
   } else {
-    ctx.fillStyle = '#ceff00';
-    ctx.font = '700 22px "Bebas Neue", sans-serif';
-    ctx.fillText('⚡ GLOFY', W/2, divY + 50);
+    // Sin stats — logo directo
+    ctx.textAlign = 'center';
+    if (logoImg) {
+      const lH = 36, lW = logoImg.width * (lH / logoImg.height);
+      ctx.globalAlpha = 0.95;
+      ctx.drawImage(logoImg, W/2 - lW/2, divY + 22, lW, lH);
+      ctx.globalAlpha = 1;
+    } else {
+      ctx.fillStyle = '#ceff00';
+      ctx.font = '700 22px "Bebas Neue", sans-serif';
+      ctx.fillText('⚡ GLOFY', W/2, divY + 50);
+    }
+    ctx.textAlign = 'left';
   }
-  ctx.textAlign = 'left';
 
   // ── 11. Footer ──
   ctx.fillStyle = '#ceff00';
@@ -599,4 +769,3 @@ goTo(0);
 </script>
 </body>
 </html>
-
